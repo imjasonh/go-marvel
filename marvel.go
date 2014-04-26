@@ -38,20 +38,14 @@ func (c Client) hash() (int64, string) {
 	return ts, fmt.Sprintf("%x", hash.Sum(nil))
 }
 
-func (c Client) baseURL(req interface{}) url.URL {
+func (c Client) baseURL(path string, params interface{}) url.URL {
 	u := url.URL{
 		Scheme: "https",
 		Host:   "gateway.marvel.com",
-		Path:   "/v1/public/",
+		Path:   "/v1/public/" + path,
 	}
-	ts, hash := c.hash()
-	u.RawQuery = url.Values(map[string][]string{
-		"ts":     []string{fmt.Sprintf("%d", ts)},
-		"apikey": []string{c.public},
-		"hash":   []string{hash},
-	}).Encode()
-	if req != nil {
-		q, _ := query.Values(req)
+	if params != nil {
+		q, _ := query.Values(params)
 		u.RawQuery += "&" + q.Encode()
 	}
 	return u
@@ -67,7 +61,7 @@ type commonResponse struct {
 	AttributionHTML string
 }
 
-type CommonRequest struct {
+type CommonParams struct {
 	Offset int `url:"offset,omitempty"`
 	Limit  int `url:"limit,omitempty"`
 }
@@ -124,15 +118,14 @@ func (d Date) Parse() time.Time {
 	return t
 }
 
-func (c Client) Series(id int64, req CommonRequest) (resp struct {
+func (c Client) Series(id int64, params CommonParams) (resp struct {
 	commonResponse
 	Data struct {
 		commonList
 		Results []Series
 	}
 }, err error) {
-	u := c.baseURL(req)
-	u.Path += fmt.Sprintf("series/%d/comics", id)
+	u := c.baseURL(fmt.Sprintf("series/%d/comics", id), params)
 	r, err := c.fetch(u)
 	if err != nil {
 		return
@@ -143,6 +136,16 @@ func (c Client) Series(id int64, req CommonRequest) (resp struct {
 }
 
 func (c Client) fetch(u url.URL) (io.ReadCloser, error) {
+	if u.RawQuery != "" {
+		u.RawQuery += "&"
+	}
+	ts, hash := c.hash()
+	u.RawQuery += url.Values(map[string][]string{
+		"ts":     []string{fmt.Sprintf("%d", ts)},
+		"apikey": []string{c.public},
+		"hash":   []string{hash},
+	}).Encode()
+
 	resp, err := http.Get(u.String())
 	if err != nil {
 		return nil, err
@@ -184,8 +187,8 @@ type CharactersList struct {
 
 type Comic struct {
 	ResourceURI        string
-	ID                 int             `json:"id,omitempty"`
-	Name               string          `json:"id,omitempty"`
+	ID                 *int            `json:"id,omitempty"`
+	Name               *string         `json:"id,omitempty"`
 	DigitalID          *int            `json:"digitalId,omitempty"`
 	Title              *string         `json:"title,omitempty"`
 	IssueNumber        *int            `json:"issueNumber,omitempty"`
