@@ -227,3 +227,83 @@ func (c Client) fetch(u url.URL) (io.ReadCloser, error) {
 	}
 	return resp.Body, nil
 }
+
+type resourceList struct {
+	Available     int
+	Returned      int
+	CollectionURI string
+}
+
+type Character struct {
+	ID          int
+	Name        string
+	Description string
+	Modified    Date
+	ResourceURI string
+	URLs        []CharacterURL
+	Thumbnail   Image
+	Comics      ComicsList
+	Stories     StoriesList
+	Events      EventsList
+	Series      SeriesList
+}
+
+type CharacterURL URL
+
+func (cu CharacterURL) Get() Character {
+	return Character{} // TODO
+}
+
+type CharactersList struct {
+	resourceList
+	Items []Character
+}
+
+type Comic struct {
+	//TODO
+}
+
+type ComicsList struct {
+	resourceList
+	Items []Comic
+}
+
+type Story struct {
+	// TODO
+}
+
+type StoriesList struct {
+	resourceList
+	Items []Story
+}
+
+type Event struct {
+	// TODO
+}
+
+type EventsList struct {
+	resourceList
+	Items []Event
+}
+
+type Series struct {
+	// TODO
+}
+
+type SeriesList struct {
+	resourceList
+	Items []Series
+}
+
+type Creator struct {
+	// TODO
+}
+
+type CreatorsList struct {
+	resourceList
+	Items []Creator
+}
+
+type URL struct {
+	Type, URL string
+}

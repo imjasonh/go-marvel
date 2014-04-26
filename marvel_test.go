@@ -12,7 +12,7 @@ var (
 
 func TestRequest(t *testing.T) {
 	flag.Parse()
-	
+
 	r, err := NewClient(*apiKey, *secret).Series(2258, CommonRequest{})
 	if err != nil {
 		t.Errorf("error: %v", err)
