@@ -1,3 +1,12 @@
+// TODO: For structs that define a ResourceURI, add a method to fetch those
+//       contents and parse them into the correct response struct.
+//       e.g., Series(123).Data.Results[0].Characters.Items[0].Get()...
+// TODO: Add a test to fetch a resource, serialize it into JSON and compare
+//       it against the response JSON to catch missing fields
+// TODO: Figure out the correct incantation to let Series not have to take an
+//       empty struct and instead take nil
+// TODO: Find/write Swagger Go client generator?
+
 package marvel
 
 import (
