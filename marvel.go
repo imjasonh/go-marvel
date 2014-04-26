@@ -133,65 +133,18 @@ func (c Client) Series(id int64, req CommonRequest) (resp struct {
 			Title       string
 			Description string
 			ResourceURI string
-			URLs        []struct {
-				Type string
-				URL  string
-			}
-			StartYear int
-			EndYear   int
-			Rating    string
-			Modified  Date
-			Thumbnail Image
-			Comics    struct {
-				Available     int
-				Returned      int
-				CollectionURI string
-				Items         []struct {
-					ResourceURI string
-					Name        string
-				}
-			}
-			Stories struct {
-				Available     int
-				Returned      int
-				CollectionURI string
-				Items         []struct {
-					ResourceURI string
-					Name        string
-					Type        string
-				}
-			}
-			Events struct {
-				Available     int
-				Returned      int
-				CollectionURI string
-				Items         []struct {
-					ResourceURI string
-					Name        string
-					Type        string
-				}
-			}
-			Characters struct {
-				Available     int
-				Returned      int
-				CollectionURI string
-				Items         []struct {
-					ResourceURI string
-					Name        string
-					Type        string
-				}
-			}
-			Creators struct {
-				Available     int
-				Returned      int
-				CollectionURI string
-				Items         []struct {
-					ResourceURI string
-					Name        string
-					Type        string
-				}
-			}
-			Next struct {
+			URLs        []URL
+			StartYear   int
+			EndYear     int
+			Rating      string
+			Modified    Date
+			Thumbnail   Image
+			Comics      ComicsList
+			Stories     StoriesList
+			Events      EventsList
+			Characters  CharactersList
+			Creators    CreatorsList
+			Next        struct {
 				ResourceURI string
 				Name        string
 			}
@@ -260,7 +213,54 @@ type CharactersList struct {
 }
 
 type Comic struct {
-	//TODO
+	ID                 int
+	DigitalID          int
+	Title              string
+	IssueNumber        int
+	VariantDescription string
+	Description        string
+	Modified           Date
+	ISBN               string
+	UPC                string
+	DiamondCode        string
+	EAN                string
+	ISSN               string
+	Format             string
+	PageCount          int
+	TextObjects        []TextObject
+	ResourceURI        string
+	URLs               []URL
+	Series             SeriesSummary
+	Variants           []ComicSummary
+	Collections        []ComicSummary
+	CollectedIssues    []ComicSummary
+	Dates              []ComicDate
+	Prices             []ComicPrice
+	Thumbnail          Image
+	Images             []Image
+	Creators           CreatorsList
+	Characters         CharactersList
+	Stories            StoriesList
+	Events             EventsList
+}
+
+type SeriesSummary struct {
+	// TODO
+}
+type ComicSummary struct {
+	// TODO
+}
+
+type TextObject struct {
+	// TODO
+}
+
+type ComicDate struct {
+	// TODO
+}
+
+type ComicPrice struct {
+	// TODO
 }
 
 type ComicsList struct {

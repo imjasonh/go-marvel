@@ -18,6 +18,7 @@ func TestRequest(t *testing.T) {
 		t.Errorf("error: %v", err)
 		return
 	}
+	t.Logf("%+v", r.Data)
 	for _, iss := range r.Data.Results {
 		t.Logf(iss.Modified.Parse().String())
 		t.Logf(iss.Thumbnail.URL(PortraitIncredible))
