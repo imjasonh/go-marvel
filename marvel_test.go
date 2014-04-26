@@ -11,6 +11,7 @@ func TestRequest(t *testing.T) {
 		return
 	}
 	for _, iss := range r.Data.Results {
+		t.Logf(iss.Modified.Parse().String())
 		t.Logf(iss.Thumbnail.URL(PortraitIncredible))
 	}
 }

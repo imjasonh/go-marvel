@@ -103,6 +103,18 @@ func (i Image) URL(v Variant) string {
 	return fmt.Sprintf("%s/%s.%s", i.Path, string(v), i.Extension)
 }
 
+type Date string
+
+const dateLayout = "2006-01-02T15:04:05-0700"
+
+func (d Date) Parse() time.Time {
+	t, err := time.Parse(dateLayout, string(d))
+	if err != nil {
+		panic(err)
+	}
+	return t
+}
+
 func (c Client) Series(id int64, req CommonRequest) (resp struct {
 	commonResponse
 	Data struct {
@@ -119,7 +131,7 @@ func (c Client) Series(id int64, req CommonRequest) (resp struct {
 			StartYear int
 			EndYear   int
 			Rating    string
-			//Modified  Date
+			Modified  Date
 			Thumbnail Image
 			Comics    struct {
 				Available     int
