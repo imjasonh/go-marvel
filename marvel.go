@@ -62,7 +62,7 @@ type commonList struct {
 	Count  int `json:"count"`
 }
 
-func (c Client) Series(id int64) (r struct {
+func (c Client) Series(id int64) (resp struct {
 	commonResponse
 	Data struct {
 		commonList
@@ -74,23 +74,26 @@ func (c Client) Series(id int64) (r struct {
 }, err error) {
 	u := c.baseURL()
 	u.Path += fmt.Sprintf("series/%d/comics", id)
-
-	resp, herr := http.Get(u.String())
-	if herr != nil {
-		err = herr
+	r, err := c.fetch(u)
+	if err != nil {
 		return
 	}
-	defer resp.Body.Close()
-	if resp.StatusCode >= http.StatusBadRequest {
-		slurp, rerr := ioutil.ReadAll(resp.Body)
-		if rerr != nil {
-			err = rerr
-			return
-		}
-		err = fmt.Errorf("error response from API: %d\n%s", resp.StatusCode, slurp)
-		return
-	}
-
-	err = json.NewDecoder(resp.Body).Decode(&r)
+	defer r.Close()
+	err = json.NewDecoder(r).Decode(&resp)
 	return
+}
+
+func (c Client) fetch(u url.URL) (io.ReadCloser, error) {
+	resp, err := http.Get(u.String())
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode >= http.StatusBadRequest {
+		slurp, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+		return nil, fmt.Errorf("error response from API: %d\n%s", resp.StatusCode, slurp)
+	}
+	return resp.Body, nil
 }
