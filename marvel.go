@@ -9,9 +9,9 @@ import (
 	"net/http"
 	"net/url"
 	"time"
-)
 
-const baseURL = "http://gateway.marvel.com/v1/public"
+	"github.com/google/go-querystring/query"
+)
 
 type Client struct {
 	public, private string
@@ -29,7 +29,7 @@ func (c Client) hash() (int64, string) {
 	return ts, fmt.Sprintf("%x", hash.Sum(nil))
 }
 
-func (c Client) baseURL() url.URL {
+func (c Client) baseURL(req interface{}) url.URL {
 	u := url.URL{
 		Scheme: "https",
 		Host:   "gateway.marvel.com",
@@ -41,6 +41,10 @@ func (c Client) baseURL() url.URL {
 		"apikey": []string{c.public},
 		"hash":   []string{hash},
 	}).Encode()
+	if req != nil {
+		q, _ := query.Values(req)
+		u.RawQuery += "&" + q.Encode()
+	}
 	return u
 }
 
@@ -54,6 +58,11 @@ type commonResponse struct {
 	AttributionHTML string `json:"attributionHTML"`
 }
 
+type CommonRequest struct {
+	Offset int `url:"offset,omitempty"`
+	Limit  int `url:"limit,omitempty"`
+}
+
 // Fields common to data that lists entities, with pagination
 type commonList struct {
 	Offset int `json:"offset"`
@@ -62,7 +71,7 @@ type commonList struct {
 	Count  int `json:"count"`
 }
 
-func (c Client) Series(id int64) (resp struct {
+func (c Client) Series(id int64, req CommonRequest) (resp struct {
 	commonResponse
 	Data struct {
 		commonList
@@ -72,7 +81,7 @@ func (c Client) Series(id int64) (resp struct {
 		} `json:"results"`
 	} `json:"data"`
 }, err error) {
-	u := c.baseURL()
+	u := c.baseURL(req)
 	u.Path += fmt.Sprintf("series/%d/comics", id)
 	r, err := c.fetch(u)
 	if err != nil {
