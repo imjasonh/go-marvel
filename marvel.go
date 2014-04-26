@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"time"
@@ -43,6 +44,7 @@ func (c Client) baseURL() url.URL {
 	return u
 }
 
+// Fields common to all response entities
 type commonResponse struct {
 	Code            int    `json:"code"`
 	ETag            string `json:"etag"`
@@ -52,6 +54,7 @@ type commonResponse struct {
 	AttributionHTML string `json:"attributionHTML"`
 }
 
+// Fields common to data that lists entities, with pagination
 type commonList struct {
 	Offset int `json:"offset"`
 	Limit  int `json:"limit"`
@@ -78,6 +81,15 @@ func (c Client) Series(id int64) (r struct {
 		return
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode >= http.StatusBadRequest {
+		slurp, rerr := ioutil.ReadAll(resp.Body)
+		if rerr != nil {
+			err = rerr
+			return
+		}
+		err = fmt.Errorf("error response from API: %d\n%s", resp.StatusCode, slurp)
+		return
+	}
 
 	err = json.NewDecoder(resp.Body).Decode(&r)
 	return
