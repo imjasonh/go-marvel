@@ -1,11 +1,19 @@
 package marvel
 
 import (
+	"flag"
 	"testing"
 )
 
+var (
+	apiKey = flag.String("pub", "", "Public API key")
+	secret = flag.String("priv", "", "Private API secret")
+)
+
 func TestRequest(t *testing.T) {
-	r, err := NewClient("d96b5157cfc7a60cbfaa715dc23c3eb1", "ccbc72b222419e2a4e40b4027f3bcb356142651b").Series(2258, CommonRequest{})
+	flag.Parse()
+	
+	r, err := NewClient(*apiKey, *secret).Series(2258, CommonRequest{})
 	if err != nil {
 		t.Errorf("error: %v", err)
 		return
