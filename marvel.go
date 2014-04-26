@@ -59,12 +59,12 @@ func (c Client) baseURL(req interface{}) url.URL {
 
 // Fields common to all response entities
 type commonResponse struct {
-	Code            int    `json:"code"`
-	ETag            string `json:"etag"`
-	Status          string `json:"status"`
-	Copyright       string `json:"copyright"`
-	AttributionText string `json:"attributionText"`
-	AttributionHTML string `json:"attributionHTML"`
+	Code            int
+	ETag            string
+	Status          string
+	Copyright       string
+	AttributionText string
+	AttributionHTML string
 }
 
 type CommonRequest struct {
@@ -74,10 +74,10 @@ type CommonRequest struct {
 
 // Fields common to data that lists entities, with pagination
 type commonList struct {
-	Offset int `json:"offset"`
-	Limit  int `json:"limit"`
-	Total  int `json:"total"`
-	Count  int `json:"count"`
+	Offset int
+	Limit  int
+	Total  int
+	Count  int
 }
 
 type Image struct {
@@ -164,17 +164,17 @@ type resourceList struct {
 }
 
 type Character struct {
-	ID          int
-	Name        string
-	Description string
-	Modified    Date
 	ResourceURI string
-	URLs        []CharacterURL
-	Thumbnail   Image
-	Comics      *ComicsList  `json:"comics,omitempty"`
-	Stories     *StoriesList `json:"stories,omitempty"`
-	Events      *EventsList  `json:"events,omitempty"`
-	Series      *SeriesList  `json:"series,omitempty"`
+	ID          *int           `json:"id,omitempty"`
+	Name        *string        `json:"name,omitempty"`
+	Description *string        `json:"description,omitempty"`
+	Modified    *Date          `json:"modified,omitempty"`
+	URLs        []CharacterURL `json:"urls,omitempty"`
+	Thumbnail   *Image         `json:"thumbnail,omitempty"`
+	Comics      *ComicsList    `json:"comics,omitempty"`
+	Stories     *StoriesList   `json:"stories,omitempty"`
+	Events      *EventsList    `json:"events,omitempty"`
+	Series      *SeriesList    `json:"series,omitempty"`
 }
 
 type CharacterURL URL
@@ -189,31 +189,32 @@ type CharactersList struct {
 }
 
 type Comic struct {
-	ID                 int
-	DigitalID          int
-	Title              string
-	IssueNumber        int
-	VariantDescription string
-	Description        string
-	Modified           Date
-	ISBN               string
-	UPC                string
-	DiamondCode        string
-	EAN                string
-	ISSN               string
-	Format             string
-	PageCount          int
-	TextObjects        []TextObject
 	ResourceURI        string
-	URLs               []URL
-	Series             Series
-	Variants           []Comic
-	Collections        []Comic
-	CollectedIssues    []Comic
-	Dates              []ComicDate
-	Prices             []ComicPrice
-	Thumbnail          Image
-	Images             []Image
+	ID                 int             `json:"id,omitempty"`
+	Name               string          `json:"id,omitempty"`
+	DigitalID          *int            `json:"digitalId,omitempty"`
+	Title              *string         `json:"title,omitempty"`
+	IssueNumber        *int            `json:"issueNumber,omitempty"`
+	VariantDescription *string         `json:"variantDescription,omitEmpty"`
+	Description        *string         `json:"description,omitempty"`
+	Modified           *Date           `json:"modified,omitempty"`
+	ISBN               *string         `json:"isbn,omitempty"`
+	UPC                *string         `json:"upc,omitempty"`
+	DiamondCode        *string         `json:"diamondCode,omitempty"`
+	EAN                *string         `json:"ean,omitempty"`
+	ISSN               *string         `json:"issn,omitempty"`
+	Format             *string         `json:"format,omitempty"`
+	PageCount          *int            `json:"pageCount,omitEmpty"`
+	TextObjects        []TextObject    `json:"textObjects,omitempty"`
+	URLs               []URL           `json:"urls,omitempty"`
+	Series             *Series         `json:"series,omitempty"`
+	Variants           []Comic         `json:"variants,omitempty"`
+	Collections        []Comic         `json:"collections,omitempty"`
+	CollectedIssues    []Comic         `json:"collectedIssues,omitempty"`
+	Dates              []ComicDate     `json:"dates,omitempty"`
+	Prices             []ComicPrice    `json:"prices,omitempty"`
+	Thumbnail          *Image          `json:"thumbnail,omitempty"`
+	Images             []Image         `json:"images,omitempty"`
 	Creators           *CreatorsList   `json:"creators,omitempty"`
 	Characters         *CharactersList `json:"characters,omitempty"`
 	Stories            *StoriesList    `json:"stories,omitempty"`
@@ -242,13 +243,14 @@ type ComicsList struct {
 }
 
 type Story struct {
-	ID            int
-	Title         string
-	Description   string
 	ResourceURI   string
-	Type          string
-	Modified      Date
-	Thumbnail     Image
+	ID            *int            `json:"id,omitempty"`
+	Name          *string         `json:"name,omitempty"`
+	Title         *string         `json:"title,omitempty"`
+	Description   *string         `json:"description,omitempty"`
+	Type          *string         `json:"type,omitempty"`
+	Modified      *Date           `json:"date,omitempty"`
+	Thumbnail     *Image          `json:"image,omitempty"`
 	Comics        *ComicsList     `json:"comics,omitempty"`
 	Series        *SeriesList     `json:"series,omitempty"`
 	Events        *EventsList     `json:"events,omitempty"`
@@ -263,15 +265,15 @@ type StoriesList struct {
 }
 
 type Event struct {
-	ID          int
-	Title       string
-	Description string
 	ResourceURI string
-	URLs        []URL
-	Modified    Date
-	Start       Date
-	End         Date
-	Thumbnail   Image
+	ID          *int            `json:"id,omitempty"`
+	Title       *string         `json:"title,omitempty"`
+	Description *string         `json:"description,omitempty"`
+	URLs        []URL           `json:"urls,omitempty"`
+	Modified    *Date           `json:"modified,omitempty"`
+	Start       *Date           `json:"start,omitempty"`
+	End         *Date           `json:"end,omitempty"`
+	Thumbnail   *Image          `json:"thumbnail,omitempty"`
 	Comics      *ComicsList     `json:"comics,omitempty"`
 	Stories     *StoriesList    `json:"stories,omitempty"`
 	Series      *SeriesList     `json:"series,omitempty"`
@@ -287,16 +289,17 @@ type EventsList struct {
 }
 
 type Series struct {
-	ID          int
-	Title       string
-	Description string
 	ResourceURI string
-	URLs        []URL
-	StartYear   int
-	EndYear     int
-	Rating      string
-	Modified    Date
-	Thumbnail   Image
+	ID          *int            `json:"id,omitempty"`
+	Name        *string         `json:"name,omitempty"`
+	Title       *string         `json:"title,omitempty"`
+	Description *string         `json:"description,omitempty"`
+	URLs        []URL           `json:"urls,omitempty"`
+	StartYear   *int            `json:"startYear,omitempty"`
+	EndYear     *int            `json:"endYear,omitempty"`
+	Rating      *string         `json:"rating,omitempty"`
+	Modified    *Date           `json:"modified,omitempty"`
+	Thumbnail   *Image          `json:"thumbnail,omitempty"`
 	Comics      *ComicsList     `json:"comics,omitempty"`
 	Stories     *StoriesList    `json:"stories,omitempty"`
 	Events      *EventsList     `json:"events,omitempty"`
@@ -312,16 +315,17 @@ type SeriesList struct {
 }
 
 type Creator struct {
-	ID          int
-	FirstName   string
-	MiddleName  string
-	LastName    string
-	Suffix      string
-	FullName    string
-	Modified    Date
 	ResourceURI string
-	URLs        []URL
-	Thumbnail   Image
+	ID          *int         `json:"id,omitempty"`
+	Name        *string      `json:"name,omitempty"`
+	FirstName   *string      `json:"firstName,omitempty"`
+	MiddleName  *string      `json:"middleName,omitempty"`
+	LastName    *string      `json:"lastName,omitempty"`
+	Suffix      *string      `json:"suffix,omitempty"`
+	FullName    *string      `json:"fullName,omitempty"`
+	Modified    *Date        `json:"modified,omitempty"`
+	URLs        []URL        `json:"urls,omitempty"`
+	Thumbnail   *Image       `json:"thumbnail,omitempty"`
 	Series      *SeriesList  `json:"series,omitempty"`
 	Stories     *StoriesList `json:"stories,omitempty"`
 	Comics      *ComicsList  `json:"comics,omitempty"`
@@ -333,6 +337,7 @@ type CreatorsList struct {
 	Items []Creator
 }
 
+// TODO: Replace with subtypes that know what their response will be, with a Fetch() method to pull down and deserialize correctly.
 type URL struct {
 	Type, URL string
 }
