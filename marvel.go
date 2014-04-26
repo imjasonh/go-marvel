@@ -128,31 +128,7 @@ func (c Client) Series(id int64, req CommonRequest) (resp struct {
 	commonResponse
 	Data struct {
 		commonList
-		Results []struct {
-			ID          int
-			Title       string
-			Description string
-			ResourceURI string
-			URLs        []URL
-			StartYear   int
-			EndYear     int
-			Rating      string
-			Modified    Date
-			Thumbnail   Image
-			Comics      ComicsList
-			Stories     StoriesList
-			Events      EventsList
-			Characters  CharactersList
-			Creators    CreatorsList
-			Next        struct {
-				ResourceURI string
-				Name        string
-			}
-			Previous struct {
-				ResourceURI string
-				Name        string
-			}
-		}
+		Results []Series
 	}
 }, err error) {
 	u := c.baseURL(req)
@@ -195,10 +171,10 @@ type Character struct {
 	ResourceURI string
 	URLs        []CharacterURL
 	Thumbnail   Image
-	Comics      ComicsList
-	Stories     StoriesList
-	Events      EventsList
-	Series      SeriesList
+	Comics      *ComicsList  `json:"comics,omitempty"`
+	Stories     *StoriesList `json:"stories,omitempty"`
+	Events      *EventsList  `json:"events,omitempty"`
+	Series      *SeriesList  `json:"series,omitempty"`
 }
 
 type CharacterURL URL
@@ -230,37 +206,34 @@ type Comic struct {
 	TextObjects        []TextObject
 	ResourceURI        string
 	URLs               []URL
-	Series             SeriesSummary
-	Variants           []ComicSummary
-	Collections        []ComicSummary
-	CollectedIssues    []ComicSummary
+	Series             Series
+	Variants           []Comic
+	Collections        []Comic
+	CollectedIssues    []Comic
 	Dates              []ComicDate
 	Prices             []ComicPrice
 	Thumbnail          Image
 	Images             []Image
-	Creators           CreatorsList
-	Characters         CharactersList
-	Stories            StoriesList
-	Events             EventsList
-}
-
-type SeriesSummary struct {
-	// TODO
-}
-type ComicSummary struct {
-	// TODO
+	Creators           *CreatorsList   `json:"creators,omitempty"`
+	Characters         *CharactersList `json:"characters,omitempty"`
+	Stories            *StoriesList    `json:"stories,omitempty"`
+	Events             *EventsList     `json:"events,omitempty"`
 }
 
 type TextObject struct {
-	// TODO
+	Type     string
+	Language string
+	Text     string
 }
 
 type ComicDate struct {
-	// TODO
+	Type string
+	Date Date
 }
 
 type ComicPrice struct {
-	// TODO
+	Type  string
+	Price float64
 }
 
 type ComicsList struct {
@@ -269,7 +242,19 @@ type ComicsList struct {
 }
 
 type Story struct {
-	// TODO
+	ID            int
+	Title         string
+	Description   string
+	ResourceURI   string
+	Type          string
+	Modified      Date
+	Thumbnail     Image
+	Comics        *ComicsList     `json:"comics,omitempty"`
+	Series        *SeriesList     `json:"series,omitempty"`
+	Events        *EventsList     `json:"events,omitempty"`
+	Characters    *CharactersList `json:"characters,omitempty"`
+	Creators      *CreatorsList   `json:"creators,omitempty"`
+	OriginalIssue Comic
 }
 
 type StoriesList struct {
@@ -278,7 +263,22 @@ type StoriesList struct {
 }
 
 type Event struct {
-	// TODO
+	ID          int
+	Title       string
+	Description string
+	ResourceURI string
+	URLs        []URL
+	Modified    Date
+	Start       Date
+	End         Date
+	Thumbnail   Image
+	Comics      *ComicsList     `json:"comics,omitempty"`
+	Stories     *StoriesList    `json:"stories,omitempty"`
+	Series      *SeriesList     `json:"series,omitempty"`
+	Characters  *CharactersList `json:"characters,omitempty"`
+	Creators    *CreatorsList   `json:"creators,omitempty"`
+	Next        *Event          `json:"next,omitempty"`
+	Previous    *Event          `json:"next,omitempty"`
 }
 
 type EventsList struct {
@@ -287,7 +287,23 @@ type EventsList struct {
 }
 
 type Series struct {
-	// TODO
+	ID          int
+	Title       string
+	Description string
+	ResourceURI string
+	URLs        []URL
+	StartYear   int
+	EndYear     int
+	Rating      string
+	Modified    Date
+	Thumbnail   Image
+	Comics      *ComicsList     `json:"comics,omitempty"`
+	Stories     *StoriesList    `json:"stories,omitempty"`
+	Events      *EventsList     `json:"events,omitempty"`
+	Characters  *CharactersList `json:"characters,omitempty"`
+	Creators    *CreatorsList   `json:"creators,omitempty"`
+	Next        *Series         `json:"next,omitempty"`
+	Previous    *Series         `json:"next,omitempty"`
 }
 
 type SeriesList struct {
@@ -296,7 +312,20 @@ type SeriesList struct {
 }
 
 type Creator struct {
-	// TODO
+	ID          int
+	FirstName   string
+	MiddleName  string
+	LastName    string
+	Suffix      string
+	FullName    string
+	Modified    Date
+	ResourceURI string
+	URLs        []URL
+	Thumbnail   Image
+	Series      *SeriesList  `json:"series,omitempty"`
+	Stories     *StoriesList `json:"stories,omitempty"`
+	Comics      *ComicsList  `json:"comics,omitempty"`
+	Events      *EventsList  `json:"events,omitempty"`
 }
 
 type CreatorsList struct {
