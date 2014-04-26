@@ -76,10 +76,81 @@ func (c Client) Series(id int64, req CommonRequest) (resp struct {
 	Data struct {
 		commonList
 		Results []struct {
-			ID        int `json:"id"`
-			DigitalID int `json:"digitalId"`
-		} `json:"results"`
-	} `json:"data"`
+			ID          int
+			Title       string
+			Description string
+			ResourceURI string
+			URLs        []struct {
+				Type string
+				URL  string
+			}
+			StartYear int
+			EndYear   int
+			Rating    string
+			//Modified  Date
+			Thumbnail struct {
+				Path      string
+				Extension string
+			}
+			Comics struct {
+				Available     int
+				Returned      int
+				CollectionURI string
+				Items         []struct {
+					ResourceURI string
+					Name        string
+				}
+			}
+			Stories struct {
+				Available     int
+				Returned      int
+				CollectionURI string
+				Items         []struct {
+					ResourceURI string
+					Name        string
+					Type        string
+				}
+			}
+			Events struct {
+				Available     int
+				Returned      int
+				CollectionURI string
+				Items         []struct {
+					ResourceURI string
+					Name        string
+					Type        string
+				}
+			}
+			Characters struct {
+				Available     int
+				Returned      int
+				CollectionURI string
+				Items         []struct {
+					ResourceURI string
+					Name        string
+					Type        string
+				}
+			}
+			Creators struct {
+				Available     int
+				Returned      int
+				CollectionURI string
+				Items         []struct {
+					ResourceURI string
+					Name        string
+					Type        string
+				}
+			}
+			Next struct {
+				ResourceURI string
+				Name        string
+			}
+			Previous struct {
+				ResourceURI string
+				Name        string
+			}
+		}
+	}
 }, err error) {
 	u := c.baseURL(req)
 	u.Path += fmt.Sprintf("series/%d/comics", id)
