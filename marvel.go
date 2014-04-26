@@ -165,22 +165,16 @@ type resourceList struct {
 
 type Character struct {
 	ResourceURI string
-	ID          *int           `json:"id,omitempty"`
-	Name        *string        `json:"name,omitempty"`
-	Description *string        `json:"description,omitempty"`
-	Modified    *Date          `json:"modified,omitempty"`
-	URLs        []CharacterURL `json:"urls,omitempty"`
-	Thumbnail   *Image         `json:"thumbnail,omitempty"`
-	Comics      *ComicsList    `json:"comics,omitempty"`
-	Stories     *StoriesList   `json:"stories,omitempty"`
-	Events      *EventsList    `json:"events,omitempty"`
-	Series      *SeriesList    `json:"series,omitempty"`
-}
-
-type CharacterURL URL
-
-func (cu CharacterURL) Get() Character {
-	return Character{} // TODO
+	ID          *int         `json:"id,omitempty"`
+	Name        *string      `json:"name,omitempty"`
+	Description *string      `json:"description,omitempty"`
+	Modified    *Date        `json:"modified,omitempty"`
+	URLs        []URL        `json:"urls,omitempty"`
+	Thumbnail   *Image       `json:"thumbnail,omitempty"`
+	Comics      *ComicsList  `json:"comics,omitempty"`
+	Stories     *StoriesList `json:"stories,omitempty"`
+	Events      *EventsList  `json:"events,omitempty"`
+	Series      *SeriesList  `json:"series,omitempty"`
 }
 
 type CharactersList struct {
