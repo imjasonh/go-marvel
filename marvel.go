@@ -71,6 +71,38 @@ type commonList struct {
 	Count  int `json:"count"`
 }
 
+type Image struct {
+	Path      string
+	Extension string
+}
+
+type Variant string
+
+var (
+	PortraitSmall       = Variant("portrait_small")
+	PortraitMedium      = Variant("portrait_medium")
+	PortraitXLarge      = Variant("portrait_xlarge")
+	PortraitFantastic   = Variant("portrait_fantastic")
+	PortraitUncanny     = Variant("portrait_uncanny")
+	PortraitIncredible  = Variant("portrait_incredible")
+	StandardSmall       = Variant("standard_small")
+	StandardMedium      = Variant("standard_medium")
+	StandardXLarge      = Variant("standard_xlarge")
+	StandardFantastic   = Variant("standard_fantastic")
+	StandardUncanny     = Variant("standard_uncanny")
+	StandardIncredible  = Variant("standard_incredible")
+	LandscapeSmall      = Variant("landscape_small")
+	LandscapeMedium     = Variant("landscape_medium")
+	LandscapeXLarge     = Variant("landscape_xlarge")
+	LandscapeFantastic  = Variant("landscape_fantastic")
+	LandscapeUncanny    = Variant("landscape_uncanny")
+	LandscapeIncredible = Variant("landscape_incredible")
+)
+
+func (i Image) URL(v Variant) string {
+	return fmt.Sprintf("%s/%s.%s", i.Path, string(v), i.Extension)
+}
+
 func (c Client) Series(id int64, req CommonRequest) (resp struct {
 	commonResponse
 	Data struct {
@@ -88,11 +120,8 @@ func (c Client) Series(id int64, req CommonRequest) (resp struct {
 			EndYear   int
 			Rating    string
 			//Modified  Date
-			Thumbnail struct {
-				Path      string
-				Extension string
-			}
-			Comics struct {
+			Thumbnail Image
+			Comics    struct {
 				Available     int
 				Returned      int
 				CollectionURI string
