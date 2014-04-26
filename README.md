@@ -1,7 +1,7 @@
 go-marvel
 =========
 
-Go client library for Marvel API
+[Go](https://golang.org) client library for the [Marvel REST API](https://developer.marvel.com/)
 
 Usage:
 
