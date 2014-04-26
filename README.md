@@ -5,7 +5,7 @@ Go client library for Marvel API
 
 Usage:
 
-```
+```go
 import (
   "fmt"
   
