@@ -99,7 +99,7 @@ func writeGIF(filename string, imgs []image.Image) error {
 			return err
 		}
 		g.Delay[i] = 0
-		g.Image[i] = gimg.Image[0]
+		g.Image[len(imgs)-i-1] = gimg.Image[0]
 	}
 
 	return gif.EncodeAll(f, &g)
