@@ -122,7 +122,7 @@ func (c Client) Series(id int64, params CommonParams) (resp struct {
 	commonResponse
 	Data struct {
 		commonList
-		Results []Series
+		Results []Comic
 	}
 }, err error) {
 	u := c.baseURL(fmt.Sprintf("series/%d/comics", id), params)
