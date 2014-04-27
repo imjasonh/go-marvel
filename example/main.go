@@ -12,8 +12,8 @@ import (
 
 var (
 	seriesID = flag.Int64("series", 2258, "Series ID (default: Uncanny X-Men)")
-	apiKey = flag.String("pub", "", "Public API key")
-	secret = flag.String("priv", "", "Private API secret")
+	apiKey   = flag.String("pub", "", "Public API key")
+	secret   = flag.String("priv", "", "Private API secret")
 )
 
 func main() {
@@ -29,8 +29,8 @@ func main() {
 			panic(err)
 		}
 		for _, iss := range r.Data.Results {
-			fetchImage(iss.IssueNumber, iss.Thumbnail.URL(marvel.PortraitIncredible))
-			fmt.Printf("%d - %s\n", iss.IssueNumber, iss.Thumbnail.URL(marvel.PortraitIncredible))
+			fetchImage(*iss.IssueNumber, iss.Thumbnail.URL(marvel.PortraitIncredible))
+			fmt.Printf("%v - %s\n", *iss.IssueNumber, iss.Thumbnail.URL(marvel.PortraitIncredible))
 		}
 		if len(r.Data.Results) < limit {
 			return
@@ -39,8 +39,8 @@ func main() {
 	}
 }
 
-func fetchImage(num int, url string) {
-	f, err := os.Create(fmt.Sprintf("%d.jpg", num))
+func fetchImage(num float64, url string) {
+	f, err := os.Create(fmt.Sprintf("%v.jpg", num))
 	if err != nil {
 		panic(err)
 	}
