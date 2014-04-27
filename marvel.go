@@ -191,7 +191,7 @@ type Comic struct {
 	Name               *string         `json:"id,omitempty"`
 	DigitalID          *int            `json:"digitalId,omitempty"`
 	Title              *string         `json:"title,omitempty"`
-	IssueNumber        *int            `json:"issueNumber,omitempty"`
+	IssueNumber        *string         `json:"issueNumber,omitempty"`
 	VariantDescription *string         `json:"variantDescription,omitEmpty"`
 	Description        *string         `json:"description,omitempty"`
 	Modified           *Date           `json:"modified,omitempty"`
