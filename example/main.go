@@ -10,6 +10,7 @@ import (
 	"image/jpeg"
 	"net/http"
 	"os"
+	"strings"
 
 	marvel "github.com/ImJasonH/go-marvel"
 )
@@ -34,14 +35,13 @@ func main() {
 			panic(err)
 		}
 		for _, iss := range r.Data.Results {
-			img, err := fetchImage(iss.Thumbnail.URL(marvel.PortraitIncredible))
-			if err != nil {
-				fmt.Printf("error: %v", err)
-				return
-			}
+			url := iss.Thumbnail.URL(marvel.PortraitIncredible)
+			img := fetchImage(url)
 			if img != nil {
 				imgs = append(imgs, img)
-				fmt.Printf("fetched %v - %s\n", *iss.IssueNumber, iss.Thumbnail.URL(marvel.PortraitIncredible))
+				fmt.Printf("fetched %v - %s\n", *iss.IssueNumber, url)
+			} else {
+				fmt.Printf("skipped %s\n", url)
 			}
 		}
 		if len(r.Data.Results) < limit {
@@ -55,26 +55,30 @@ func main() {
 	}
 }
 
-func fetchImage(url string) (image.Image, error) {
+func fetchImage(url string) image.Image {
+	if strings.Contains(url, "image_not_available") {
+		return nil
+	}
+
 	resp, err := http.Get(url)
 	if err != nil {
-		return nil, err
+		return nil
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("error: %s -> %d\n", url, resp.StatusCode)
+		return nil
 	}
 	defer resp.Body.Close()
 
 	b := bufio.NewReaderSize(resp.Body, 1)
 	if _, err := b.Peek(1); err == bufio.ErrBufferFull {
-		return nil, nil
+		return nil
 	}
 
 	img, err := jpeg.Decode(b)
 	if err != nil {
-		return nil, nil
+		return nil
 	}
-	return img, err
+	return img
 }
 
 func writeGIF(filename string, imgs []image.Image) error {
