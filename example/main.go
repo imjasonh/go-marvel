@@ -3,7 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io"
+	"image"
+	"image/gif"
+	"image/jpeg"
 	"net/http"
 	"os"
 
@@ -23,41 +25,55 @@ func main() {
 
 	offset := 0
 	limit := 100
+	imgs := []image.Image{}
 	for {
 		r, err := c.Series(*seriesID, marvel.CommonParams{offset, limit})
 		if err != nil {
 			panic(err)
 		}
 		for _, iss := range r.Data.Results {
-			fetchImage(*iss.IssueNumber, iss.Thumbnail.URL(marvel.PortraitIncredible))
-			fmt.Printf("%v - %s\n", *iss.IssueNumber, iss.Thumbnail.URL(marvel.PortraitIncredible))
+			img, err := fetchImage(iss.Thumbnail.URL(marvel.PortraitIncredible))
+			if err != nil {
+				fmt.Printf("error: %v", err)
+				return
+			}
+			imgs = append(imgs, img)
+			fmt.Printf("fetched %v - %s\n", *iss.IssueNumber, iss.Thumbnail.URL(marvel.PortraitIncredible))
 		}
 		if len(r.Data.Results) < limit {
-			return
+			break
 		}
 		offset += limit
 	}
+
+	if err := writeGIF(fmt.Sprintf("%d.gif", *seriesID), imgs); err != nil {
+		fmt.Printf("error: %v", err)
+	}
 }
 
-func fetchImage(num float64, url string) {
-	f, err := os.Create(fmt.Sprintf("%v.jpg", num))
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-
+func fetchImage(url string) (image.Image, error) {
 	resp, err := http.Get(url)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("error: %s -> %d\n", url, resp.StatusCode)
-		return
+		return nil, fmt.Errorf("error: %s -> %d\n", url, resp.StatusCode)
 	}
 	defer resp.Body.Close()
 
-	_, err = io.Copy(f, resp.Body)
+	img, err := jpeg.Decode(resp.Body)
+	return img, err
+}
+
+func writeGIF(filename string, imgs []image.Image) error {
+	f, err := os.Create(filename)
 	if err != nil {
-		panic(err)
+		return err
 	}
+	defer f.Close()
+
+	pimgs := []*image.Paletted{}
+	// TODO: convert imgs into pimgs
+
+	return gif.EncodeAll(f, &gif.GIF{Image:pimgs})
 }
