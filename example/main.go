@@ -30,7 +30,7 @@ func main() {
 	limit := 100
 	imgs := []image.Image{}
 	for {
-		r, err := c.Series(*seriesID).Comics(marvel.CommonParams{offset, limit})
+		r, err := c.Series(*seriesID).Comics(marvel.ComicsParams{Offset: offset, Limit: limit})
 		if err != nil {
 			panic(err)
 		}

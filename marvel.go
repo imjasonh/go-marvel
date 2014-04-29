@@ -52,7 +52,7 @@ func (c Client) baseURL(path string, params interface{}) url.URL {
 }
 
 // Fields common to all response entities
-type commonResponse struct {
+type CommonResponse struct {
 	Code            int
 	ETag            string
 	Status          string
@@ -61,13 +61,25 @@ type commonResponse struct {
 	AttributionHTML string
 }
 
+type ComicsResponse struct {
+	CommonResponse
+	Data struct {
+		CommonList
+		Results []Comic
+	}
+}
+
 type CommonParams struct {
 	Offset int `url:"offset,omitempty"`
 	Limit  int `url:"limit,omitempty"`
 }
 
+type ComicsParams struct {
+	CommonParams
+}
+
 // Fields common to data that lists entities, with pagination
-type commonList struct {
+type CommonList struct {
 	Offset int
 	Limit  int
 	Total  int
@@ -118,30 +130,25 @@ func (d Date) Parse() time.Time {
 	return t
 }
 
-func (c Client) Series(id int) SeriesRequest {
-	return SeriesRequest{seriesID: id, client: c}
+func (c Client) Series(id int) SeriesResource {
+	return SeriesResource{seriesID: id, client: c}
 }
 
-type SeriesRequest struct {
+type SeriesResource struct {
 	seriesID int
-	client Client
+	client   Client
 }
 
-func (s SeriesRequest) Comics(params CommonParams) (resp struct{
-	commonResponse
-	Data struct {
-		commonList
-		Results []Comic
-	}
-}, err error) {
+func (s SeriesResource) Comics(params ComicsParams) (*ComicsResponse, error) {
 	u := s.client.baseURL(fmt.Sprintf("series/%d/comics", s.seriesID), params)
 	r, err := s.client.fetch(u)
 	if err != nil {
-		return
+		return nil, err
 	}
 	defer r.Close()
+	var resp ComicsResponse
 	err = json.NewDecoder(r).Decode(&resp)
-	return
+	return &resp, err
 }
 
 func (c Client) fetch(u url.URL) (io.ReadCloser, error) {
