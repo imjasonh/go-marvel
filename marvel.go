@@ -134,12 +134,6 @@ func (s Series) Comics(params CommonParams) (resp struct{
 		Results []Comic
 	}
 }, err error) {
-	commonResponse
-	Data struct {
-		commonList
-		Results []Comic
-	}
-}, err error) {
 	u := s.client.baseURL(fmt.Sprintf("series/%d/comics", id), params)
 	r, err := c.fetch(u)
 	if err != nil {
