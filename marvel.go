@@ -69,12 +69,9 @@ type ComicsResponse struct {
 	}
 }
 
-type CommonParams struct {
+type ComicsParams struct {
 	Offset int `url:"offset,omitempty"`
 	Limit  int `url:"limit,omitempty"`
-}
-
-type ComicsParams struct {
 	CommonParams
 }
 
