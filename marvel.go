@@ -118,7 +118,7 @@ func (d Date) Parse() time.Time {
 	return t
 }
 
-func (c Client Series(id int) Series {
+func (c Client) Series(id int) Series {
 	return Series{id, c}
 }
 
