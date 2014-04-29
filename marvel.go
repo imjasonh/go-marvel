@@ -72,7 +72,6 @@ type ComicsResponse struct {
 type ComicsParams struct {
 	Offset int `url:"offset,omitempty"`
 	Limit  int `url:"limit,omitempty"`
-	CommonParams
 }
 
 // Fields common to data that lists entities, with pagination
