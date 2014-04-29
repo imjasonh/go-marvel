@@ -118,14 +118,29 @@ func (d Date) Parse() time.Time {
 	return t
 }
 
-func (c Client) Series(id int64, params CommonParams) (resp struct {
+func (c Client Series(id int) Series {
+	return Series{id, c}
+}
+
+type Series struct {
+	seriesID int
+	client Client
+}
+
+func (s Series) Comics(params CommonParams) (resp struct{
 	commonResponse
 	Data struct {
 		commonList
 		Results []Comic
 	}
 }, err error) {
-	u := c.baseURL(fmt.Sprintf("series/%d/comics", id), params)
+	commonResponse
+	Data struct {
+		commonList
+		Results []Comic
+	}
+}, err error) {
+	u := s.client.baseURL(fmt.Sprintf("series/%d/comics", id), params)
 	r, err := c.fetch(u)
 	if err != nil {
 		return
