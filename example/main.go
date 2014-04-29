@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	seriesID = flag.Int64("series", 2258, "Series ID (default: Uncanny X-Men)")
+	seriesID = flag.Int("series", 2258, "Series ID (default: Uncanny X-Men)")
 	apiKey   = flag.String("pub", "", "Public API key")
 	secret   = flag.String("priv", "", "Private API secret")
 )
