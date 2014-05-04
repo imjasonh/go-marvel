@@ -77,8 +77,8 @@ func (c Client) hash() (int64, string) {
 }
 
 type URL struct {
-	Type string `json:"type,omitempty"`
-	URL  string `json:"url,omitempty"`
+	Type *string `json:"type,omitempty"`
+	URL  *string `json:"url,omitempty"`
 }
 
 // Fields common to all request parameter entities
@@ -91,25 +91,25 @@ type CommonParams struct {
 
 // Fields common to all response entities
 type CommonResponse struct {
-	Code            int    `json:"code,omitempty"`
-	ETag            string `json:"etag,omitempty"`
-	Status          string `json:"status,omitempty"`
-	Copyright       string `json:"copyright,omitempty"`
-	AttributionText string `json:"attributionText,omitempty"`
-	AttributionHTML string `json:"attributionHtml,omitempty"`
+	Code            *int    `json:"code,omitempty"`
+	ETag            *string `json:"etag,omitempty"`
+	Status          *string `json:"status,omitempty"`
+	Copyright       *string `json:"copyright,omitempty"`
+	AttributionText *string `json:"attributionText,omitempty"`
+	AttributionHTML *string `json:"attributionHtml,omitempty"`
 }
 
 // Fields common to data that lists entities, with pagination
 type CommonList struct {
-	Offset int `json:"offset,omitempty"`
-	Limit  int `json:"limit,omitempty"`
-	Total  int `json:"total,omitempty"`
-	Count  int `json:"count,omitempty"`
+	Offset *int `json:"offset,omitempty"`
+	Limit  *int `json:"limit,omitempty"`
+	Total  *int `json:"total,omitempty"`
+	Count  *int `json:"count,omitempty"`
 }
 
 type Image struct {
-	Path      string `json:"path,omitempty"`
-	Extension string `json:"extension,omitempty"`
+	Path      *string `json:"path,omitempty"`
+	Extension *string `json:"extension,omitempty"`
 }
 
 type Variant string
@@ -136,7 +136,7 @@ var (
 )
 
 func (i Image) URL(v Variant) string {
-	return fmt.Sprintf("%s/%s.%s", i.Path, string(v), i.Extension)
+	return fmt.Sprintf("%s/%s.%s", *i.Path, string(v), *i.Extension)
 }
 
 type Date string
