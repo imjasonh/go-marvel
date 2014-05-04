@@ -13,6 +13,10 @@ import (
 	"github.com/google/go-querystring/query"
 )
 
+const (
+	basePath = "http://gateway.marvel.com/v1/public"
+)
+
 type Client struct {
 	PublicKey, PrivateKey string
 	Client                *http.Client
@@ -55,7 +59,7 @@ func (c Client) baseURL(path string, params interface{}) url.URL {
 	u := url.URL{
 		Scheme: "https",
 		Host:   "gateway.marvel.com",
-		Path:   "/v1/public/" + path,
+		Path:   "/v1/public" + path,
 	}
 	if params != nil {
 		q, _ := query.Values(params)
@@ -214,7 +218,7 @@ type CharactersResponse struct {
 }
 
 type Character struct {
-	ResourceURI string       `json:"resourceURI,omitempty"`
+	ResourceURI *string       `json:"resourceURI,omitempty"`
 	ID          *int         `json:"id,omitempty"`
 	Name        *string      `json:"name,omitempty"`
 	Description *string      `json:"description,omitempty"`
@@ -225,6 +229,11 @@ type Character struct {
 	Stories     *StoriesList `json:"stories,omitempty"`
 	Events      *EventsList  `json:"events,omitempty"`
 	Series      *SeriesList  `json:"series,omitempty"`
+}
+
+func (c Character) Get(cl Client) (resp *CharactersResponse, err error) {
+	err = cl.fetch((*c.ResourceURI)[len(basePath):], nil, &resp)
+	return
 }
 
 type CharactersList struct {
@@ -306,7 +315,7 @@ type ComicsResponse struct {
 }
 
 type Comic struct {
-	ResourceURI        string          `json:"resourceURI,omitempty"`
+	ResourceURI        *string          `json:"resourceURI,omitempty"`
 	ID                 *int            `json:"id,omitempty"`
 	Name               *string         `json:"id,omitempty"`
 	DigitalID          *int            `json:"digitalId,omitempty"`
@@ -336,6 +345,11 @@ type Comic struct {
 	Characters         *CharactersList `json:"characters,omitempty"`
 	Stories            *StoriesList    `json:"stories,omitempty"`
 	Events             *EventsList     `json:"events,omitempty"`
+}
+
+func (c Comic) Get(cl Client) (resp *ComicsResponse, err error) {
+	err = cl.fetch((*c.ResourceURI)[len(basePath):], nil, &resp)
+	return
 }
 
 type TextObject struct {
@@ -443,6 +457,11 @@ type Creator struct {
 	Events      *EventsList  `json:"events,omitempty"`
 }
 
+func (c Creator) Get(cl Client) (resp *CreatorsResponse, err error) {
+	err = cl.fetch((*c.ResourceURI)[len(basePath):], nil, &resp)
+	return
+}
+
 type CreatorsList struct {
 	ResourceList
 	Items []Creator
@@ -531,6 +550,11 @@ type Event struct {
 	Creators    *CreatorsList   `json:"creators,omitempty"`
 	Next        *Event          `json:"next,omitempty"`
 	Previous    *Event          `json:"next,omitempty"`
+}
+
+func (e Event) Get(cl Client) (resp *EventsResponse, err error) {
+	err = cl.fetch((*e.ResourceURI)[len(basePath):], nil, &resp)
+	return
 }
 
 type EventsList struct {
@@ -629,6 +653,11 @@ type Series struct {
 	Previous    *Series         `json:"next,omitempty"`
 }
 
+func (s Series) Get(cl Client) (resp *SeriesResponse, err error) {
+	err = cl.fetch((*s.ResourceURI)[len(basePath):], nil, &resp)
+	return
+}
+
 type SeriesList struct {
 	ResourceList
 	Items []Series
@@ -713,6 +742,11 @@ type Story struct {
 	Characters    *CharactersList `json:"characters,omitempty"`
 	Creators      *CreatorsList   `json:"creators,omitempty"`
 	OriginalIssue Comic
+}
+
+func (s Story) Get(cl Client) (resp *StoriesResponse, err error) {
+	err = cl.fetch((*s.ResourceURI)[len(basePath):], nil, &resp)
+	return
 }
 
 type StoriesList struct {
