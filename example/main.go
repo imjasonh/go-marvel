@@ -24,13 +24,21 @@ var (
 func main() {
 	flag.Parse()
 
-	c := marvel.NewClient(*apiKey, *secret)
+	c := marvel.Client{
+		PublicKey:  *apiKey,
+		PrivateKey: *secret,
+	}
 
 	offset := 0
 	limit := 100
 	imgs := []image.Image{}
 	for {
-		r, err := c.Series(*seriesID).Comics(marvel.ComicsParams{Offset: offset, Limit: limit})
+		r, err := c.SingleSeries(*seriesID).Comics(marvel.ComicsParams{
+			CommonParams: marvel.CommonParams{
+				Offset: offset,
+				Limit:  limit,
+			},
+		})
 		if err != nil {
 			panic(err)
 		}
