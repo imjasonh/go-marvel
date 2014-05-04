@@ -13,7 +13,10 @@ var (
 func TestRequest(t *testing.T) {
 	flag.Parse()
 
-	r, err := NewClient(*apiKey, *secret).SingleSeries(2258).Comics(ComicsParams{})
+	r, err := Client{
+		PublicKey: *apiKey,
+		PrivateKey: *secret,
+	}.SingleSeries(2258).Comics(ComicsParams{})
 	if err != nil {
 		t.Errorf("error: %v", err)
 		return

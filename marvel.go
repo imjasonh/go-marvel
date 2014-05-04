@@ -1,10 +1,3 @@
-// TODO: For structs that define a ResourceURI, add a method to fetch those
-//       contents and parse them into the correct response struct.
-//       e.g., Series(123).Data.Results[0].Characters.Items[0].Get()...
-// TODO: Add a test to fetch a resource, serialize it into JSON and compare
-//       it against the response JSON to catch missing fields
-// TODO: Find/write Swagger Go client generator?
-
 package marvel
 
 import (
@@ -21,11 +14,8 @@ import (
 )
 
 type Client struct {
-	public, private string
-}
-
-func NewClient(public, private string) Client {
-	return Client{public, private}
+	PublicKey, PrivateKey string
+	Client                *http.Client
 }
 
 func (c Client) fetch(path string, params interface{}, out interface{}) error {
@@ -36,10 +26,17 @@ func (c Client) fetch(path string, params interface{}, out interface{}) error {
 	ts, hash := c.hash()
 	u.RawQuery += url.Values(map[string][]string{
 		"ts":     []string{fmt.Sprintf("%d", ts)},
-		"apikey": []string{c.public},
+		"apikey": []string{c.PublicKey},
 		"hash":   []string{hash},
 	}).Encode()
-	resp, err := http.Get(u.String())
+	if c.Client == nil {
+		c.Client = &http.Client{}
+	}
+	req, err := http.NewRequest("GET", u.String(), nil)
+	if err != nil {
+		return err
+	}
+	resp, err := c.Client.Do(req)
 	if err != nil {
 		return err
 	}
@@ -71,11 +68,10 @@ func (c Client) baseURL(path string, params interface{}) url.URL {
 func (c Client) hash() (int64, string) {
 	ts := time.Now().Unix()
 	hash := md5.New()
-	io.WriteString(hash, fmt.Sprintf("%d%s%s", ts, c.private, c.public))
+	io.WriteString(hash, fmt.Sprintf("%d%s%s", ts, c.PrivateKey, c.PublicKey))
 	return ts, fmt.Sprintf("%x", hash.Sum(nil))
 }
 
-// TODO: Replace with subtypes that know what their response will be, with a Fetch() method to pull down and deserialize correctly.
 type URL struct {
 	Type string `json:"type,omitempty"`
 	URL  string `json:"url,omitempty"`
@@ -150,8 +146,6 @@ func (d Date) Parse() time.Time {
 	}
 	return t
 }
-
-
 
 type ResourceList struct {
 	Available     int    `json:"available,omitempty"`
