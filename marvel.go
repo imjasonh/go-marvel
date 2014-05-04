@@ -204,9 +204,9 @@ type CharactersParams struct {
 	CommonParams
 	Name           string `url:"name,omitempty"`
 	NameStartsWith string `url:"nameStartsWith,omitempty"`
-	Comics         string `url:"comics,omitempty"`
-	Events         string `url:"events,omitempty"`
-	Stories        string `url:"stories,omitempty"`
+	Comics         []int  `url:"comics,omitempty,comma"`
+	Events         []int  `url:"events,omitempty,comma"`
+	Stories        []int  `url:"stories,omitempty,comma"`
 }
 
 type CharactersResponse struct {
@@ -218,7 +218,7 @@ type CharactersResponse struct {
 }
 
 type Character struct {
-	ResourceURI *string       `json:"resourceURI,omitempty"`
+	ResourceURI *string      `json:"resourceURI,omitempty"`
 	ID          *int         `json:"id,omitempty"`
 	Name        *string      `json:"name,omitempty"`
 	Description *string      `json:"description,omitempty"`
@@ -298,12 +298,12 @@ type ComicsParams struct {
 	EAN               string `url:"ean,omitempty"`
 	ISSN              string `url:"issn,omitempty"`
 	HasDigitalIssue   bool   `url:"hasDigitalIssue,omitempty"`
-	Creators          string `url:"creators,omitempty"`
-	Characters        string `url:"characters,omitempty"`
-	Events            string `url:"events,omitempty"`
-	Stories           string `url:"stories,omitempty"`
-	SharedAppearances string `url:"sharedAppearances,omitempty"`
-	Collaborators     string `url:"collaborators,omitempty"`
+	Creators          []int  `url:"creators,omitempty,comma"`
+	Characters        []int  `url:"characters,omitempty,comma"`
+	Events            []int  `url:"events,omitempty,comma"`
+	Stories           []int  `url:"stories,omitempty,comma"`
+	SharedAppearances []int  `url:"sharedAppearances,omitempty,comma"`
+	Collaborators     []int  `url:"collaborators,omitempty,comma"`
 }
 
 type ComicsResponse struct {
@@ -315,7 +315,7 @@ type ComicsResponse struct {
 }
 
 type Comic struct {
-	ResourceURI        *string          `json:"resourceURI,omitempty"`
+	ResourceURI        *string         `json:"resourceURI,omitempty"`
 	ID                 *int            `json:"id,omitempty"`
 	Name               *string         `json:"id,omitempty"`
 	DigitalID          *int            `json:"digitalId,omitempty"`
@@ -426,9 +426,9 @@ type CreatorsParams struct {
 	FirstNameStartsWith  string `url:"firstNameStartsWith,omitempty"`
 	MiddleNameStartsWith string `url:"middleNameStartsWith,omitempty"`
 	LastNameStartsWith   string `url:"lastNameStartsWith,omitempty"`
-	Comics               string `url:"comics,omitempty"`
-	Events               string `url:"events,omitempty"`
-	Stories              string `url:"stories,omitempty"`
+	Comics               []int  `url:"comics,omitempty,comma"`
+	Events               []int  `url:"events,omitempty,comma"`
+	Stories              []int  `url:"stories,omitempty,comma"`
 }
 
 type CreatorsResponse struct {
@@ -519,10 +519,10 @@ type EventsParams struct {
 	CommonParams
 	Name           string `url:"name,omitempty"`
 	NameStartsWith string `url:"nameStartsWith,omitempty"`
-	Creators       string `url:"creators,omitempty"`
-	Characters     string `url:"characters,omitempty"`
-	Comics         string `url:"comics,omitempty"`
-	Stories        string `url:"stories,omitempty"`
+	Creators       []int  `url:"creators,omitempty,comma"`
+	Characters     []int  `url:"characters,omitempty,comma"`
+	Comics         []int  `url:"comics,omitempty,comma"`
+	Stories        []int  `url:"stories,omitempty,comma"`
 }
 
 type EventsResponse struct {
@@ -616,12 +616,12 @@ type SeriesParams struct {
 	Events          string `url:"events,omitempty"`
 	Title           string `url:"title,omitempty"`
 	TitleStartsWith string `url:"titleStartsWith,omitempty"`
-	StartYear       string `url:"startYear,omitempty"`
+	StartYear       int    `url:"startYear,omitempty"`
 	SeriesType      string `url:"seriesType,omitempty"`
 	Contains        string `url:"contains,omitempty"`
-	Comics          string `url:"comics,omitempty"`
-	Creators        string `url:"creators,omitempty"`
-	Characters      string `url:"characters,omitempty"`
+	Comics          []int  `url:"comics,omitempty,comma"`
+	Creators        []int  `url:"creators,omitempty,comma"`
+	Characters      []int  `url:"characters,omitempty,comma"`
 }
 
 type SeriesResponse struct {
@@ -713,10 +713,10 @@ func (s StoryResource) Series(params SeriesParams) (resp *SeriesResponse, err er
 
 type StoriesParams struct {
 	CommonParams
-	Comics     string `url:"comics,omitempty"`
-	Events     string `url:"events,omitempty"`
-	Creators   string `url:"creators,omitempty"`
-	Characters string `url:"characters,omitempty"`
+	Comics     []int `url:"comics,omitempty,comma"`
+	Events     []int `url:"events,omitempty,comma"`
+	Creators   []int `url:"creators,omitempty,comma"`
+	Characters []int `url:"characters,omitempty,comma"`
 }
 
 type StoriesResponse struct {

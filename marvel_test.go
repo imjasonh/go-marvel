@@ -14,7 +14,7 @@ func TestRequest(t *testing.T) {
 	flag.Parse()
 
 	r, err := Client{
-		PublicKey: *apiKey,
+		PublicKey:  *apiKey,
 		PrivateKey: *secret,
 	}.SingleSeries(2258).Comics(ComicsParams{})
 	if err != nil {
