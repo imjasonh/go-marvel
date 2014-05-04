@@ -28,12 +28,30 @@ func NewClient(public, private string) Client {
 	return Client{public, private}
 }
 
-// See http://developer.marvel.com/documentation/authorization
-func (c Client) hash() (int64, string) {
-	ts := time.Now().Unix()
-	hash := md5.New()
-	io.WriteString(hash, fmt.Sprintf("%d%s%s", ts, c.private, c.public))
-	return ts, fmt.Sprintf("%x", hash.Sum(nil))
+func (c Client) fetch(path string, params interface{}, out interface{}) error {
+	u := c.baseURL(path, params)
+	if u.RawQuery != "" {
+		u.RawQuery += "&"
+	}
+	ts, hash := c.hash()
+	u.RawQuery += url.Values(map[string][]string{
+		"ts":     []string{fmt.Sprintf("%d", ts)},
+		"apikey": []string{c.public},
+		"hash":   []string{hash},
+	}).Encode()
+	resp, err := http.Get(u.String())
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode >= http.StatusBadRequest {
+		slurp, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+		return fmt.Errorf("error response from API: %d\n%s", resp.StatusCode, slurp)
+	}
+	defer resp.Body.Close()
+	return json.NewDecoder(resp.Body).Decode(out)
 }
 
 func (c Client) baseURL(path string, params interface{}) url.URL {
@@ -47,6 +65,14 @@ func (c Client) baseURL(path string, params interface{}) url.URL {
 		u.RawQuery += "&" + q.Encode()
 	}
 	return u
+}
+
+// See http://developer.marvel.com/documentation/authorization
+func (c Client) hash() (int64, string) {
+	ts := time.Now().Unix()
+	hash := md5.New()
+	io.WriteString(hash, fmt.Sprintf("%d%s%s", ts, c.private, c.public))
+	return ts, fmt.Sprintf("%x", hash.Sum(nil))
 }
 
 // TODO: Replace with subtypes that know what their response will be, with a Fetch() method to pull down and deserialize correctly.
@@ -125,56 +151,62 @@ func (d Date) Parse() time.Time {
 	return t
 }
 
-func (c Client) Series(id int) SeriesResource {
-	return SeriesResource{seriesID: id, client: c}
-}
 
-type SeriesResource struct {
-	seriesID int
-	client   Client
-}
-
-func (s SeriesResource) Comics(params ComicsParams) (*ComicsResponse, error) {
-	u := s.client.baseURL(fmt.Sprintf("series/%d/comics", s.seriesID), params)
-	r, err := s.client.fetch(u)
-	if err != nil {
-		return nil, err
-	}
-	defer r.Close()
-	var resp ComicsResponse
-	err = json.NewDecoder(r).Decode(&resp)
-	return &resp, err
-}
-
-func (c Client) fetch(u url.URL) (io.ReadCloser, error) {
-	if u.RawQuery != "" {
-		u.RawQuery += "&"
-	}
-	ts, hash := c.hash()
-	u.RawQuery += url.Values(map[string][]string{
-		"ts":     []string{fmt.Sprintf("%d", ts)},
-		"apikey": []string{c.public},
-		"hash":   []string{hash},
-	}).Encode()
-
-	resp, err := http.Get(u.String())
-	if err != nil {
-		return nil, err
-	}
-	if resp.StatusCode >= http.StatusBadRequest {
-		slurp, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return nil, err
-		}
-		return nil, fmt.Errorf("error response from API: %d\n%s", resp.StatusCode, slurp)
-	}
-	return resp.Body, nil
-}
 
 type ResourceList struct {
 	Available     int    `json:"available,omitempty"`
 	Returned      int    `json:"returned,omitempty"`
 	CollectionURI string `json:"collectionUri,omitempty"`
+}
+
+/////
+// Characters
+/////
+
+func (c Client) Characters(id int) CharactersResource {
+	return CharactersResource{basePath: fmt.Sprintf("/characters/%d", id), client: c}
+}
+
+type CharactersResource struct {
+	basePath string
+	client   Client
+}
+
+func (s CharactersResource) Comics(params ComicsParams) (resp *ComicsResponse, err error) {
+	err = s.client.fetch(s.basePath+"/comics", params, &resp)
+	return
+}
+
+func (s CharactersResource) Events(params EventsParams) (resp *EventsResponse, err error) {
+	err = s.client.fetch(s.basePath+"/events", params, &resp)
+	return
+}
+
+func (s CharactersResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
+	err = s.client.fetch(s.basePath+"/stories", params, &resp)
+	return
+}
+
+func (s CharactersResource) Stories(params StoriesParams) (resp *StoriesResponse, err error) {
+	err = s.client.fetch(s.basePath+"/stories", params, &resp)
+	return
+}
+
+type CharactersParams struct {
+	CommonParams
+	Name           string `url:"name,omitempty"`
+	NameStartsWith string `url:"nameStartsWith,omitempty"`
+	Comics         string `url:"comics,omitempty"`
+	Events         string `url:"events,omitempty"`
+	Stories        string `url:"stories,omitempty"`
+}
+
+type CharactersResponse struct {
+	CommonResponse
+	Data struct {
+		CommonList
+		Results []Character `json:"results,omitempty"`
+	} `json:"data,omitempty"`
 }
 
 type Character struct {
@@ -199,6 +231,35 @@ type CharactersList struct {
 /////
 // Comics
 /////
+
+func (c Client) Comics(id int) ComicsResource {
+	return ComicsResource{basePath: fmt.Sprintf("comics/%d", id), client: c}
+}
+
+type ComicsResource struct {
+	basePath string
+	client   Client
+}
+
+func (s ComicsResource) Characters(params CharactersParams) (resp *CharactersResponse, err error) {
+	err = s.client.fetch(s.basePath+"/characters", params, &resp)
+	return
+}
+
+func (s ComicsResource) Events(params EventsParams) (resp *EventsResponse, err error) {
+	err = s.client.fetch(s.basePath+"/events", params, &resp)
+	return
+}
+
+func (s ComicsResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
+	err = s.client.fetch(s.basePath+"/stories", params, &resp)
+	return
+}
+
+func (s ComicsResource) Stories(params StoriesParams) (resp *StoriesResponse, err error) {
+	err = s.client.fetch(s.basePath+"/stories", params, &resp)
+	return
+}
 
 type ComicsParams struct {
 	CommonParams
@@ -288,12 +349,54 @@ type ComicsList struct {
 // Stories
 /////
 
+func (c Client) Stories(id int) StoriesResource {
+	return StoriesResource{basePath: fmt.Sprintf("stories/%d", id), client: c}
+}
+
+type StoriesResource struct {
+	basePath string
+	client   Client
+}
+
+func (s StoriesResource) Characters(params CharactersParams) (resp *CharactersResponse, err error) {
+	err = s.client.fetch(s.basePath+"/characters", params, &resp)
+	return
+}
+
+func (s StoriesResource) Comics(params ComicsParams) (resp *ComicsResponse, err error) {
+	err = s.client.fetch(s.basePath+"/comics", params, &resp)
+	return
+}
+
+func (s StoriesResource) Creators(params CreatorsParams) (resp *CreatorsResponse, err error) {
+	err = s.client.fetch(s.basePath+"/creators", params, &resp)
+	return
+}
+
+func (s StoriesResource) Events(params EventsParams) (resp *EventsResponse, err error) {
+	err = s.client.fetch(s.basePath+"/events", params, &resp)
+	return
+}
+
+func (s StoriesResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
+	err = s.client.fetch(s.basePath+"/stories", params, &resp)
+	return
+}
+
 type StoriesParams struct {
 	CommonParams
 	Comics     string `url:"comics,omitempty"`
 	Events     string `url:"events,omitempty"`
 	Creators   string `url:"creators,omitempty"`
 	Characters string `url:"characters,omitempty"`
+}
+
+type StoriesResponse struct {
+	CommonResponse
+	Data struct {
+		CommonList
+		Results []Story `json:"results,omitempty"`
+	} `json:"data,omitempty"`
 }
 
 type Story struct {
@@ -322,6 +425,40 @@ type StoriesList struct {
 // Events
 /////
 
+func (c Client) Events(id int) EventsResource {
+	return EventsResource{basePath: fmt.Sprintf("events/%d", id), client: c}
+}
+
+type EventsResource struct {
+	basePath string
+	client   Client
+}
+
+func (s EventsResource) Characters(params CharactersParams) (resp *CharactersResponse, err error) {
+	err = s.client.fetch(s.basePath+"/characters", params, &resp)
+	return
+}
+
+func (s EventsResource) Comics(params ComicsParams) (resp *ComicsResponse, err error) {
+	err = s.client.fetch(s.basePath+"/comics", params, &resp)
+	return
+}
+
+func (s EventsResource) Creators(params CreatorsParams) (resp *CreatorsResponse, err error) {
+	err = s.client.fetch(s.basePath+"/creators", params, &resp)
+	return
+}
+
+func (s EventsResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
+	err = s.client.fetch(s.basePath+"/stories", params, &resp)
+	return
+}
+
+func (s EventsResource) Stories(params StoriesParams) (resp *StoriesResponse, err error) {
+	err = s.client.fetch(s.basePath+"/stories", params, &resp)
+	return
+}
+
 type EventsParams struct {
 	CommonParams
 	Name           string `url:"name,omitempty"`
@@ -330,6 +467,14 @@ type EventsParams struct {
 	Characters     string `url:"characters,omitempty"`
 	Comics         string `url:"comics,omitempty"`
 	Stories        string `url:"stories,omitempty"`
+}
+
+type EventsResponse struct {
+	CommonResponse
+	Data struct {
+		CommonList
+		Results []Event `json:"results,omitempty"`
+	} `json:"data,omitempty"`
 }
 
 type Event struct {
@@ -360,6 +505,40 @@ type EventsList struct {
 // Series
 /////
 
+func (c Client) Series(id int) SeriesResource {
+	return SeriesResource{basePath: fmt.Sprintf("/series/%d", id), client: c}
+}
+
+type SeriesResource struct {
+	basePath string
+	client   Client
+}
+
+func (s SeriesResource) Characters(params CharactersParams) (resp *CharactersResponse, err error) {
+	err = s.client.fetch(s.basePath+"/characters", params, resp)
+	return
+}
+
+func (s SeriesResource) Comics(params ComicsParams) (resp *ComicsResponse, err error) {
+	err = s.client.fetch(s.basePath+"/comics", params, &resp)
+	return
+}
+
+func (s SeriesResource) Creators(params CreatorsParams) (resp *CreatorsResponse, err error) {
+	err = s.client.fetch(s.basePath+"/creators", params, &resp)
+	return
+}
+
+func (s SeriesResource) Events(params EventsParams) (resp *EventsResponse, err error) {
+	err = s.client.fetch(s.basePath+"/events", params, &resp)
+	return
+}
+
+func (s SeriesResource) Stories(params StoriesParams) (resp *StoriesResponse, err error) {
+	err = s.client.fetch(s.basePath+"/stories", params, &resp)
+	return
+}
+
 type SeriesParams struct {
 	CommonParams
 	Events          string `url:"events,omitempty"`
@@ -371,6 +550,14 @@ type SeriesParams struct {
 	Comics          string `url:"comics,omitempty"`
 	Creators        string `url:"creators,omitempty"`
 	Characters      string `url:"characters,omitempty"`
+}
+
+type SeriesResponse struct {
+	CommonResponse
+	Data struct {
+		CommonList
+		Results []Series `json:"results,omitempty"`
+	} `json:"data,omitempty"`
 }
 
 type Series struct {
@@ -403,6 +590,35 @@ type SeriesList struct {
 // Creators
 /////
 
+func (c Client) Creators(id int) CreatorsResource {
+	return CreatorsResource{basePath: fmt.Sprintf("/creators/%d", id), client: c}
+}
+
+type CreatorsResource struct {
+	basePath string
+	client   Client
+}
+
+func (s CreatorsResource) Comics(params ComicsParams) (resp *ComicsResponse, err error) {
+	err = s.client.fetch(s.basePath+"/comics", params, &resp)
+	return
+}
+
+func (s CreatorsResource) Events(params EventsParams) (resp *EventsResponse, err error) {
+	err = s.client.fetch(s.basePath+"/events", params, &resp)
+	return
+}
+
+func (s CreatorsResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
+	err = s.client.fetch(s.basePath+"/series", params, &resp)
+	return
+}
+
+func (s CreatorsResource) Stories(params StoriesParams) (resp *StoriesResponse, err error) {
+	err = s.client.fetch(s.basePath+"/stories", params, &resp)
+	return
+}
+
 type CreatorsParams struct {
 	CommonParams
 	FirstName            string `url:"firstName,omitempty"`
@@ -416,6 +632,14 @@ type CreatorsParams struct {
 	Comics               string `url:"comics,omitempty"`
 	Events               string `url:"events,omitempty"`
 	Stories              string `url:"stories,omitempty"`
+}
+
+type CreatorsResponse struct {
+	CommonResponse
+	Data struct {
+		CommonList
+		Results []Creator `json:"results,omitempty"`
+	} `json:"data,omitempty"`
 }
 
 type Creator struct {
