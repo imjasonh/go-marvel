@@ -3,8 +3,6 @@
 //       e.g., Series(123).Data.Results[0].Characters.Items[0].Get()...
 // TODO: Add a test to fetch a resource, serialize it into JSON and compare
 //       it against the response JSON to catch missing fields
-// TODO: Figure out the correct incantation to let Series not have to take an
-//       empty struct and instead take nil
 // TODO: Find/write Swagger Go client generator?
 
 package marvel
@@ -51,40 +49,41 @@ func (c Client) baseURL(path string, params interface{}) url.URL {
 	return u
 }
 
+// TODO: Replace with subtypes that know what their response will be, with a Fetch() method to pull down and deserialize correctly.
+type URL struct {
+	Type string `json:"type,omitempty"`
+	URL  string `json:"url,omitempty"`
+}
+
+// Fields common to all request parameter entities
+type CommonParams struct {
+	OrderBy       string `url:"orderBy,omitempty"`
+	Offset        int    `url:"offset,omitempty"`
+	Limit         int    `url:"limit,omitempty"`
+	ModifiedSince string `url:"modifiedSince,omitempty"`
+}
+
 // Fields common to all response entities
 type CommonResponse struct {
-	Code            int
-	ETag            string
-	Status          string
-	Copyright       string
-	AttributionText string
-	AttributionHTML string
-}
-
-type ComicsResponse struct {
-	CommonResponse
-	Data struct {
-		CommonList
-		Results []Comic
-	}
-}
-
-type ComicsParams struct {
-	Offset int `url:"offset,omitempty"`
-	Limit  int `url:"limit,omitempty"`
+	Code            int    `json:"code,omitempty"`
+	ETag            string `json:"etag,omitempty"`
+	Status          string `json:"status,omitempty"`
+	Copyright       string `json:"copyright,omitempty"`
+	AttributionText string `json:"attributionText,omitempty"`
+	AttributionHTML string `json:"attributionHtml,omitempty"`
 }
 
 // Fields common to data that lists entities, with pagination
 type CommonList struct {
-	Offset int
-	Limit  int
-	Total  int
-	Count  int
+	Offset int `json:"offset,omitempty"`
+	Limit  int `json:"limit,omitempty"`
+	Total  int `json:"total,omitempty"`
+	Count  int `json:"count,omitempty"`
 }
 
 type Image struct {
-	Path      string
-	Extension string
+	Path      string `json:"path,omitempty"`
+	Extension string `json:"extension,omitempty"`
 }
 
 type Variant string
@@ -172,14 +171,14 @@ func (c Client) fetch(u url.URL) (io.ReadCloser, error) {
 	return resp.Body, nil
 }
 
-type resourceList struct {
-	Available     int
-	Returned      int
-	CollectionURI string
+type ResourceList struct {
+	Available     int    `json:"available,omitempty"`
+	Returned      int    `json:"returned,omitempty"`
+	CollectionURI string `json:"collectionUri,omitempty"`
 }
 
 type Character struct {
-	ResourceURI string
+	ResourceURI string       `json:"resourceURI,omitempty"`
 	ID          *int         `json:"id,omitempty"`
 	Name        *string      `json:"name,omitempty"`
 	Description *string      `json:"description,omitempty"`
@@ -193,12 +192,46 @@ type Character struct {
 }
 
 type CharactersList struct {
-	resourceList
-	Items []Character
+	ResourceList
+	Items []Character `json:"items,omitempty"`
+}
+
+/////
+// Comics
+/////
+
+type ComicsParams struct {
+	CommonParams
+	Format            string `url:"format,omitempty"`
+	FormatType        string `url:"formatType,omitempty"`
+	NoVariants        bool   `url:"noVariants,omitempty"`
+	DateDescriptor    string `url:"dateDescriptor,omitempty"`
+	DateRange         string `url:"dateRange,omitempty"`
+	DiamondCode       string `url:"diamondCode,omitempty"`
+	DigitalID         string `url:"digitalId,omitempty"`
+	UPC               string `url:"upc,omitempty"`
+	ISBN              string `url:"isbn,omitempty"`
+	EAN               string `url:"ean,omitempty"`
+	ISSN              string `url:"issn,omitempty"`
+	HasDigitalIssue   bool   `url:"hasDigitalIssue,omitempty"`
+	Creators          string `url:"creators,omitempty"`
+	Characters        string `url:"characters,omitempty"`
+	Events            string `url:"events,omitempty"`
+	Stories           string `url:"stories,omitempty"`
+	SharedAppearances string `url:"sharedAppearances,omitempty"`
+	Collaborators     string `url:"collaborators,omitempty"`
+}
+
+type ComicsResponse struct {
+	CommonResponse
+	Data struct {
+		CommonList
+		Results []Comic `json:"results,omitempty"`
+	} `json:"data,omitempty"`
 }
 
 type Comic struct {
-	ResourceURI        string
+	ResourceURI        string          `json:"resourceURI,omitempty"`
 	ID                 *int            `json:"id,omitempty"`
 	Name               *string         `json:"id,omitempty"`
 	DigitalID          *int            `json:"digitalId,omitempty"`
@@ -231,28 +264,40 @@ type Comic struct {
 }
 
 type TextObject struct {
-	Type     string
-	Language string
-	Text     string
+	Type     string `json:"text,omitempty"`
+	Language string `json:"language,omitempty"`
+	Text     string `json:"text,omitempty"`
 }
 
 type ComicDate struct {
-	Type string
-	Date Date
+	Type string `json:"type,omitempty"`
+	Date Date   `json:"date,omitempty"`
 }
 
 type ComicPrice struct {
-	Type  string
-	Price float64
+	Type  string  `json:"type,omitempty"`
+	Price float64 `json:"price,omitempty"`
 }
 
 type ComicsList struct {
-	resourceList
-	Items []Comic
+	ResourceList
+	Items []Comic `json:"items,omitempty"`
+}
+
+/////
+// Stories
+/////
+
+type StoriesParams struct {
+	CommonParams
+	Comics     string `url:"comics,omitempty"`
+	Events     string `url:"events,omitempty"`
+	Creators   string `url:"creators,omitempty"`
+	Characters string `url:"characters,omitempty"`
 }
 
 type Story struct {
-	ResourceURI   string
+	ResourceURI   *string         `json:"resourceURI,omitempty"`
 	ID            *int            `json:"id,omitempty"`
 	Name          *string         `json:"name,omitempty"`
 	Title         *string         `json:"title,omitempty"`
@@ -269,12 +314,26 @@ type Story struct {
 }
 
 type StoriesList struct {
-	resourceList
-	Items []Story
+	ResourceList
+	Items []Story `json:"items,omitempty"`
+}
+
+/////
+// Events
+/////
+
+type EventsParams struct {
+	CommonParams
+	Name           string `url:"name,omitempty"`
+	NameStartsWith string `url:"nameStartsWith,omitempty"`
+	Creators       string `url:"creators,omitempty"`
+	Characters     string `url:"characters,omitempty"`
+	Comics         string `url:"comics,omitempty"`
+	Stories        string `url:"stories,omitempty"`
 }
 
 type Event struct {
-	ResourceURI string
+	ResourceURI *string         `json:"resourceURI,omitempty"`
 	ID          *int            `json:"id,omitempty"`
 	Title       *string         `json:"title,omitempty"`
 	Description *string         `json:"description,omitempty"`
@@ -293,12 +352,29 @@ type Event struct {
 }
 
 type EventsList struct {
-	resourceList
-	Items []Event
+	ResourceList
+	Items []Event `json:"items,omitempty"`
+}
+
+/////
+// Series
+/////
+
+type SeriesParams struct {
+	CommonParams
+	Events          string `url:"events,omitempty"`
+	Title           string `url:"title,omitempty"`
+	TitleStartsWith string `url:"titleStartsWith,omitempty"`
+	StartYear       string `url:"startYear,omitempty"`
+	SeriesType      string `url:"seriesType,omitempty"`
+	Contains        string `url:"contains,omitempty"`
+	Comics          string `url:"comics,omitempty"`
+	Creators        string `url:"creators,omitempty"`
+	Characters      string `url:"characters,omitempty"`
 }
 
 type Series struct {
-	ResourceURI string
+	ResourceURI *string         `json:"resourceURI,omitempty"`
 	ID          *int            `json:"id,omitempty"`
 	Name        *string         `json:"name,omitempty"`
 	Title       *string         `json:"title,omitempty"`
@@ -319,12 +395,31 @@ type Series struct {
 }
 
 type SeriesList struct {
-	resourceList
+	ResourceList
 	Items []Series
 }
 
+/////
+// Creators
+/////
+
+type CreatorsParams struct {
+	CommonParams
+	FirstName            string `url:"firstName,omitempty"`
+	MiddleName           string `url:"middleName,omitempty"`
+	LastName             string `url:"lastName,omitempty"`
+	Suffix               string `url:"suffix,omitempty"`
+	NameStartsWith       string `url:"nameStartsWith,omitempty"`
+	FirstNameStartsWith  string `url:"firstNameStartsWith,omitempty"`
+	MiddleNameStartsWith string `url:"middleNameStartsWith,omitempty"`
+	LastNameStartsWith   string `url:"lastNameStartsWith,omitempty"`
+	Comics               string `url:"comics,omitempty"`
+	Events               string `url:"events,omitempty"`
+	Stories              string `url:"stories,omitempty"`
+}
+
 type Creator struct {
-	ResourceURI string
+	ResourceURI *string      `json:"resourceURI,omitempty"`
 	ID          *int         `json:"id,omitempty"`
 	Name        *string      `json:"name,omitempty"`
 	FirstName   *string      `json:"firstName,omitempty"`
@@ -342,11 +437,6 @@ type Creator struct {
 }
 
 type CreatorsList struct {
-	resourceList
+	ResourceList
 	Items []Creator
-}
-
-// TODO: Replace with subtypes that know what their response will be, with a Fetch() method to pull down and deserialize correctly.
-type URL struct {
-	Type, URL string
 }
