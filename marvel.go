@@ -191,7 +191,7 @@ func (s CharacterResource) Events(params EventsParams) (resp *EventsResponse, er
 }
 
 func (s CharacterResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
-	err = s.client.fetch(s.basePath+"/stories", params, &resp)
+	err = s.client.fetch(s.basePath+"/series", params, &resp)
 	return
 }
 
@@ -275,7 +275,7 @@ func (s ComicResource) Events(params EventsParams) (resp *EventsResponse, err er
 }
 
 func (s ComicResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
-	err = s.client.fetch(s.basePath+"/stories", params, &resp)
+	err = s.client.fetch(s.basePath+"/series", params, &resp)
 	return
 }
 
@@ -506,7 +506,7 @@ func (s EventResource) Creators(params CreatorsParams) (resp *CreatorsResponse, 
 }
 
 func (s EventResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
-	err = s.client.fetch(s.basePath+"/stories", params, &resp)
+	err = s.client.fetch(s.basePath+"/series", params, &resp)
 	return
 }
 
@@ -707,7 +707,7 @@ func (s StoryResource) Events(params EventsParams) (resp *EventsResponse, err er
 }
 
 func (s StoryResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
-	err = s.client.fetch(s.basePath+"/stories", params, &resp)
+	err = s.client.fetch(s.basePath+"/series", params, &resp)
 	return
 }
 
