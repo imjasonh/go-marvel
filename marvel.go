@@ -360,89 +360,92 @@ type ComicsList struct {
 }
 
 /////
-// Stories
+// Creators
 /////
 
-func (c Client) Story(id int) StoryResource {
-	return StoryResource{basePath: fmt.Sprintf("stories/%d", id), client: c}
+func (c Client) Creator(id int) CreatorResource {
+	return CreatorResource{basePath: fmt.Sprintf("/creators/%d", id), client: c}
 }
 
-type StoryResource struct {
+type CreatorResource struct {
 	basePath string
 	client   Client
 }
 
-func (c Client) Stories(params StoriesParams) (resp *StoriesResponse, err error) {
-	err = c.fetch("/stories", params, &resp)
+func (c Client) Creators(params CreatorsParams) (resp *CreatorsResponse, err error) {
+	err = c.fetch("/creators", params, &resp)
 	return
 }
 
-func (s StoryResource) Get() (resp *StoriesResponse, err error) {
+func (s CreatorResource) Get() (resp *CreatorsResponse, err error) {
 	err = s.client.fetch(s.basePath, nil, &resp)
 	return
 }
 
-func (s StoryResource) Characters(params CharactersParams) (resp *CharactersResponse, err error) {
-	err = s.client.fetch(s.basePath+"/characters", params, &resp)
-	return
-}
-
-func (s StoryResource) Comics(params ComicsParams) (resp *ComicsResponse, err error) {
+func (s CreatorResource) Comics(params ComicsParams) (resp *ComicsResponse, err error) {
 	err = s.client.fetch(s.basePath+"/comics", params, &resp)
 	return
 }
 
-func (s StoryResource) Creators(params CreatorsParams) (resp *CreatorsResponse, err error) {
-	err = s.client.fetch(s.basePath+"/creators", params, &resp)
-	return
-}
-
-func (s StoryResource) Events(params EventsParams) (resp *EventsResponse, err error) {
+func (s CreatorResource) Events(params EventsParams) (resp *EventsResponse, err error) {
 	err = s.client.fetch(s.basePath+"/events", params, &resp)
 	return
 }
 
-func (s StoryResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
+func (s CreatorResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
+	err = s.client.fetch(s.basePath+"/series", params, &resp)
+	return
+}
+
+func (s CreatorResource) Stories(params StoriesParams) (resp *StoriesResponse, err error) {
 	err = s.client.fetch(s.basePath+"/stories", params, &resp)
 	return
 }
 
-type StoriesParams struct {
+type CreatorsParams struct {
 	CommonParams
-	Comics     string `url:"comics,omitempty"`
-	Events     string `url:"events,omitempty"`
-	Creators   string `url:"creators,omitempty"`
-	Characters string `url:"characters,omitempty"`
+	FirstName            string `url:"firstName,omitempty"`
+	MiddleName           string `url:"middleName,omitempty"`
+	LastName             string `url:"lastName,omitempty"`
+	Suffix               string `url:"suffix,omitempty"`
+	NameStartsWith       string `url:"nameStartsWith,omitempty"`
+	FirstNameStartsWith  string `url:"firstNameStartsWith,omitempty"`
+	MiddleNameStartsWith string `url:"middleNameStartsWith,omitempty"`
+	LastNameStartsWith   string `url:"lastNameStartsWith,omitempty"`
+	Comics               string `url:"comics,omitempty"`
+	Events               string `url:"events,omitempty"`
+	Stories              string `url:"stories,omitempty"`
 }
 
-type StoriesResponse struct {
+type CreatorsResponse struct {
 	CommonResponse
 	Data struct {
 		CommonList
-		Results []Story `json:"results,omitempty"`
+		Results []Creator `json:"results,omitempty"`
 	} `json:"data,omitempty"`
 }
 
-type Story struct {
-	ResourceURI   *string         `json:"resourceURI,omitempty"`
-	ID            *int            `json:"id,omitempty"`
-	Name          *string         `json:"name,omitempty"`
-	Title         *string         `json:"title,omitempty"`
-	Description   *string         `json:"description,omitempty"`
-	Type          *string         `json:"type,omitempty"`
-	Modified      *Date           `json:"date,omitempty"`
-	Thumbnail     *Image          `json:"image,omitempty"`
-	Comics        *ComicsList     `json:"comics,omitempty"`
-	Series        *SeriesList     `json:"series,omitempty"`
-	Events        *EventsList     `json:"events,omitempty"`
-	Characters    *CharactersList `json:"characters,omitempty"`
-	Creators      *CreatorsList   `json:"creators,omitempty"`
-	OriginalIssue Comic
+type Creator struct {
+	ResourceURI *string      `json:"resourceURI,omitempty"`
+	ID          *int         `json:"id,omitempty"`
+	Name        *string      `json:"name,omitempty"`
+	FirstName   *string      `json:"firstName,omitempty"`
+	MiddleName  *string      `json:"middleName,omitempty"`
+	LastName    *string      `json:"lastName,omitempty"`
+	Suffix      *string      `json:"suffix,omitempty"`
+	FullName    *string      `json:"fullName,omitempty"`
+	Modified    *Date        `json:"modified,omitempty"`
+	URLs        []URL        `json:"urls,omitempty"`
+	Thumbnail   *Image       `json:"thumbnail,omitempty"`
+	Series      *SeriesList  `json:"series,omitempty"`
+	Stories     *StoriesList `json:"stories,omitempty"`
+	Comics      *ComicsList  `json:"comics,omitempty"`
+	Events      *EventsList  `json:"events,omitempty"`
 }
 
-type StoriesList struct {
+type CreatorsList struct {
 	ResourceList
-	Items []Story `json:"items,omitempty"`
+	Items []Creator
 }
 
 /////
@@ -632,90 +635,87 @@ type SeriesList struct {
 }
 
 /////
-// Creators
+// Stories
 /////
 
-func (c Client) Creator(id int) CreatorResource {
-	return CreatorResource{basePath: fmt.Sprintf("/creators/%d", id), client: c}
+func (c Client) Story(id int) StoryResource {
+	return StoryResource{basePath: fmt.Sprintf("stories/%d", id), client: c}
 }
 
-type CreatorResource struct {
+type StoryResource struct {
 	basePath string
 	client   Client
 }
 
-func (c Client) Creators(params CreatorsParams) (resp *CreatorsResponse, err error) {
-	err = c.fetch("/creators", params, &resp)
+func (c Client) Stories(params StoriesParams) (resp *StoriesResponse, err error) {
+	err = c.fetch("/stories", params, &resp)
 	return
 }
 
-func (s CreatorResource) Get() (resp *CreatorsResponse, err error) {
+func (s StoryResource) Get() (resp *StoriesResponse, err error) {
 	err = s.client.fetch(s.basePath, nil, &resp)
 	return
 }
 
-func (s CreatorResource) Comics(params ComicsParams) (resp *ComicsResponse, err error) {
+func (s StoryResource) Characters(params CharactersParams) (resp *CharactersResponse, err error) {
+	err = s.client.fetch(s.basePath+"/characters", params, &resp)
+	return
+}
+
+func (s StoryResource) Comics(params ComicsParams) (resp *ComicsResponse, err error) {
 	err = s.client.fetch(s.basePath+"/comics", params, &resp)
 	return
 }
 
-func (s CreatorResource) Events(params EventsParams) (resp *EventsResponse, err error) {
+func (s StoryResource) Creators(params CreatorsParams) (resp *CreatorsResponse, err error) {
+	err = s.client.fetch(s.basePath+"/creators", params, &resp)
+	return
+}
+
+func (s StoryResource) Events(params EventsParams) (resp *EventsResponse, err error) {
 	err = s.client.fetch(s.basePath+"/events", params, &resp)
 	return
 }
 
-func (s CreatorResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
-	err = s.client.fetch(s.basePath+"/series", params, &resp)
-	return
-}
-
-func (s CreatorResource) Stories(params StoriesParams) (resp *StoriesResponse, err error) {
+func (s StoryResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
 	err = s.client.fetch(s.basePath+"/stories", params, &resp)
 	return
 }
 
-type CreatorsParams struct {
+type StoriesParams struct {
 	CommonParams
-	FirstName            string `url:"firstName,omitempty"`
-	MiddleName           string `url:"middleName,omitempty"`
-	LastName             string `url:"lastName,omitempty"`
-	Suffix               string `url:"suffix,omitempty"`
-	NameStartsWith       string `url:"nameStartsWith,omitempty"`
-	FirstNameStartsWith  string `url:"firstNameStartsWith,omitempty"`
-	MiddleNameStartsWith string `url:"middleNameStartsWith,omitempty"`
-	LastNameStartsWith   string `url:"lastNameStartsWith,omitempty"`
-	Comics               string `url:"comics,omitempty"`
-	Events               string `url:"events,omitempty"`
-	Stories              string `url:"stories,omitempty"`
+	Comics     string `url:"comics,omitempty"`
+	Events     string `url:"events,omitempty"`
+	Creators   string `url:"creators,omitempty"`
+	Characters string `url:"characters,omitempty"`
 }
 
-type CreatorsResponse struct {
+type StoriesResponse struct {
 	CommonResponse
 	Data struct {
 		CommonList
-		Results []Creator `json:"results,omitempty"`
+		Results []Story `json:"results,omitempty"`
 	} `json:"data,omitempty"`
 }
 
-type Creator struct {
-	ResourceURI *string      `json:"resourceURI,omitempty"`
-	ID          *int         `json:"id,omitempty"`
-	Name        *string      `json:"name,omitempty"`
-	FirstName   *string      `json:"firstName,omitempty"`
-	MiddleName  *string      `json:"middleName,omitempty"`
-	LastName    *string      `json:"lastName,omitempty"`
-	Suffix      *string      `json:"suffix,omitempty"`
-	FullName    *string      `json:"fullName,omitempty"`
-	Modified    *Date        `json:"modified,omitempty"`
-	URLs        []URL        `json:"urls,omitempty"`
-	Thumbnail   *Image       `json:"thumbnail,omitempty"`
-	Series      *SeriesList  `json:"series,omitempty"`
-	Stories     *StoriesList `json:"stories,omitempty"`
-	Comics      *ComicsList  `json:"comics,omitempty"`
-	Events      *EventsList  `json:"events,omitempty"`
+type Story struct {
+	ResourceURI   *string         `json:"resourceURI,omitempty"`
+	ID            *int            `json:"id,omitempty"`
+	Name          *string         `json:"name,omitempty"`
+	Title         *string         `json:"title,omitempty"`
+	Description   *string         `json:"description,omitempty"`
+	Type          *string         `json:"type,omitempty"`
+	Modified      *Date           `json:"date,omitempty"`
+	Thumbnail     *Image          `json:"image,omitempty"`
+	Comics        *ComicsList     `json:"comics,omitempty"`
+	Series        *SeriesList     `json:"series,omitempty"`
+	Events        *EventsList     `json:"events,omitempty"`
+	Characters    *CharactersList `json:"characters,omitempty"`
+	Creators      *CreatorsList   `json:"creators,omitempty"`
+	OriginalIssue Comic
 }
 
-type CreatorsList struct {
+type StoriesList struct {
 	ResourceList
-	Items []Creator
+	Items []Story `json:"items,omitempty"`
 }
