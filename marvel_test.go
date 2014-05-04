@@ -30,6 +30,14 @@ func TestRequest(t *testing.T) {
 	comic, err := r.Data.Results[0].Get(c)
 	if err != nil {
 		t.Errorf("error getting: %v", err)
+		return
 	}
 	t.Logf("%+v", comic.Data.Results[0])
+
+	stories, err := r.Data.Results[0].Stories.List(c)
+	if err != nil {
+		t.Errorf("error listing stories: %v", err)
+		return
+	}
+	t.Logf("%+v", stories.Data.Results)
 }

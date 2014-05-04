@@ -152,9 +152,9 @@ func (d Date) Parse() time.Time {
 }
 
 type ResourceList struct {
-	Available     int    `json:"available,omitempty"`
-	Returned      int    `json:"returned,omitempty"`
-	CollectionURI string `json:"collectionUri,omitempty"`
+	Available     *int    `json:"available,omitempty"`
+	Returned      *int    `json:"returned,omitempty"`
+	CollectionURI *string `json:"collectionUri,omitempty"`
 }
 
 /////
@@ -239,6 +239,11 @@ func (c Character) Get(cl Client) (resp *CharactersResponse, err error) {
 type CharactersList struct {
 	ResourceList
 	Items []Character `json:"items,omitempty"`
+}
+
+func (l CharactersList) List(cl Client) (resp *CharactersResponse, err error) {
+	err = cl.fetch((*l.CollectionURI)[len(basePath):], nil, &resp)
+	return
 }
 
 /////
@@ -373,6 +378,11 @@ type ComicsList struct {
 	Items []Comic `json:"items,omitempty"`
 }
 
+func (l ComicsList) List(cl Client) (resp *ComicsResponse, err error) {
+	err = cl.fetch((*l.CollectionURI)[len(basePath):], nil, &resp)
+	return
+}
+
 /////
 // Creators
 /////
@@ -465,6 +475,11 @@ func (c Creator) Get(cl Client) (resp *CreatorsResponse, err error) {
 type CreatorsList struct {
 	ResourceList
 	Items []Creator
+}
+
+func (l CreatorsList) List(cl Client) (resp *CreatorsResponse, err error) {
+	err = cl.fetch((*l.CollectionURI)[len(basePath):], nil, &resp)
+	return
 }
 
 /////
@@ -560,6 +575,11 @@ func (e Event) Get(cl Client) (resp *EventsResponse, err error) {
 type EventsList struct {
 	ResourceList
 	Items []Event `json:"items,omitempty"`
+}
+
+func (l EventsList) List(cl Client) (resp *EventsResponse, err error) {
+	err = cl.fetch((*l.CollectionURI)[len(basePath):], nil, &resp)
+	return
 }
 
 /////
@@ -663,6 +683,11 @@ type SeriesList struct {
 	Items []Series
 }
 
+func (l SeriesList) List(cl Client) (resp *SeriesResponse, err error) {
+	err = cl.fetch((*l.CollectionURI)[len(basePath):], nil, &resp)
+	return
+}
+
 /////
 // Stories
 /////
@@ -752,4 +777,9 @@ func (s Story) Get(cl Client) (resp *StoriesResponse, err error) {
 type StoriesList struct {
 	ResourceList
 	Items []Story `json:"items,omitempty"`
+}
+
+func (l StoriesList) List(cl Client) (resp *StoriesResponse, err error) {
+	err = cl.fetch((*l.CollectionURI)[len(basePath):], nil, &resp)
+	return
 }
