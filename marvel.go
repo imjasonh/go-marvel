@@ -163,31 +163,41 @@ type ResourceList struct {
 // Characters
 /////
 
-func (c Client) Characters(id int) CharactersResource {
-	return CharactersResource{basePath: fmt.Sprintf("/characters/%d", id), client: c}
+func (c Client) Character(id int) CharacterResource {
+	return CharacterResource{basePath: fmt.Sprintf("/characters/%d", id), client: c}
 }
 
-type CharactersResource struct {
+type CharacterResource struct {
 	basePath string
 	client   Client
 }
 
-func (s CharactersResource) Comics(params ComicsParams) (resp *ComicsResponse, err error) {
+func (c Client) Characters(params CharactersParams) (resp *CharactersResponse, err error) {
+	err = c.fetch("/characters", params, &resp)
+	return
+}
+
+func (s CharacterResource) Get() (resp *CharactersResponse, err error) {
+	err = s.client.fetch(s.basePath, nil, &resp)
+	return
+}
+
+func (s CharacterResource) Comics(params ComicsParams) (resp *ComicsResponse, err error) {
 	err = s.client.fetch(s.basePath+"/comics", params, &resp)
 	return
 }
 
-func (s CharactersResource) Events(params EventsParams) (resp *EventsResponse, err error) {
+func (s CharacterResource) Events(params EventsParams) (resp *EventsResponse, err error) {
 	err = s.client.fetch(s.basePath+"/events", params, &resp)
 	return
 }
 
-func (s CharactersResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
+func (s CharacterResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
 	err = s.client.fetch(s.basePath+"/stories", params, &resp)
 	return
 }
 
-func (s CharactersResource) Stories(params StoriesParams) (resp *StoriesResponse, err error) {
+func (s CharacterResource) Stories(params StoriesParams) (resp *StoriesResponse, err error) {
 	err = s.client.fetch(s.basePath+"/stories", params, &resp)
 	return
 }
@@ -232,31 +242,41 @@ type CharactersList struct {
 // Comics
 /////
 
-func (c Client) Comics(id int) ComicsResource {
-	return ComicsResource{basePath: fmt.Sprintf("comics/%d", id), client: c}
+func (c Client) Comic(id int) ComicResource {
+	return ComicResource{basePath: fmt.Sprintf("comics/%d", id), client: c}
 }
 
-type ComicsResource struct {
+type ComicResource struct {
 	basePath string
 	client   Client
 }
 
-func (s ComicsResource) Characters(params CharactersParams) (resp *CharactersResponse, err error) {
+func (c Client) Comics(params ComicsParams) (resp *ComicsResponse, err error) {
+	err = c.fetch("/comics", params, &resp)
+	return
+}
+
+func (s ComicResource) Get() (resp *ComicsResponse, err error) {
+	err = s.client.fetch(s.basePath, nil, &resp)
+	return
+}
+
+func (s ComicResource) Characters(params CharactersParams) (resp *CharactersResponse, err error) {
 	err = s.client.fetch(s.basePath+"/characters", params, &resp)
 	return
 }
 
-func (s ComicsResource) Events(params EventsParams) (resp *EventsResponse, err error) {
+func (s ComicResource) Events(params EventsParams) (resp *EventsResponse, err error) {
 	err = s.client.fetch(s.basePath+"/events", params, &resp)
 	return
 }
 
-func (s ComicsResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
+func (s ComicResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
 	err = s.client.fetch(s.basePath+"/stories", params, &resp)
 	return
 }
 
-func (s ComicsResource) Stories(params StoriesParams) (resp *StoriesResponse, err error) {
+func (s ComicResource) Stories(params StoriesParams) (resp *StoriesResponse, err error) {
 	err = s.client.fetch(s.basePath+"/stories", params, &resp)
 	return
 }
@@ -349,36 +369,46 @@ type ComicsList struct {
 // Stories
 /////
 
-func (c Client) Stories(id int) StoriesResource {
-	return StoriesResource{basePath: fmt.Sprintf("stories/%d", id), client: c}
+func (c Client) Story(id int) StoryResource {
+	return StoryResource{basePath: fmt.Sprintf("stories/%d", id), client: c}
 }
 
-type StoriesResource struct {
+type StoryResource struct {
 	basePath string
 	client   Client
 }
 
-func (s StoriesResource) Characters(params CharactersParams) (resp *CharactersResponse, err error) {
+func (c Client) Stories(params StoriesParams) (resp *StoriesResponse, err error) {
+	err = c.fetch("/stories", params, &resp)
+	return
+}
+
+func (s StoryResource) Get() (resp *StoriesResponse, err error) {
+	err = s.client.fetch(s.basePath, nil, &resp)
+	return
+}
+
+func (s StoryResource) Characters(params CharactersParams) (resp *CharactersResponse, err error) {
 	err = s.client.fetch(s.basePath+"/characters", params, &resp)
 	return
 }
 
-func (s StoriesResource) Comics(params ComicsParams) (resp *ComicsResponse, err error) {
+func (s StoryResource) Comics(params ComicsParams) (resp *ComicsResponse, err error) {
 	err = s.client.fetch(s.basePath+"/comics", params, &resp)
 	return
 }
 
-func (s StoriesResource) Creators(params CreatorsParams) (resp *CreatorsResponse, err error) {
+func (s StoryResource) Creators(params CreatorsParams) (resp *CreatorsResponse, err error) {
 	err = s.client.fetch(s.basePath+"/creators", params, &resp)
 	return
 }
 
-func (s StoriesResource) Events(params EventsParams) (resp *EventsResponse, err error) {
+func (s StoryResource) Events(params EventsParams) (resp *EventsResponse, err error) {
 	err = s.client.fetch(s.basePath+"/events", params, &resp)
 	return
 }
 
-func (s StoriesResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
+func (s StoryResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
 	err = s.client.fetch(s.basePath+"/stories", params, &resp)
 	return
 }
@@ -425,36 +455,46 @@ type StoriesList struct {
 // Events
 /////
 
-func (c Client) Events(id int) EventsResource {
-	return EventsResource{basePath: fmt.Sprintf("events/%d", id), client: c}
+func (c Client) Event(id int) EventResource {
+	return EventResource{basePath: fmt.Sprintf("events/%d", id), client: c}
 }
 
-type EventsResource struct {
+type EventResource struct {
 	basePath string
 	client   Client
 }
 
-func (s EventsResource) Characters(params CharactersParams) (resp *CharactersResponse, err error) {
+func (c Client) Events(params EventsParams) (resp *EventsResponse, err error) {
+	err = c.fetch("/events", params, &resp)
+	return
+}
+
+func (s EventResource) Get() (resp *EventsResponse, err error) {
+	err = s.client.fetch(s.basePath, nil, &resp)
+	return
+}
+
+func (s EventResource) Characters(params CharactersParams) (resp *CharactersResponse, err error) {
 	err = s.client.fetch(s.basePath+"/characters", params, &resp)
 	return
 }
 
-func (s EventsResource) Comics(params ComicsParams) (resp *ComicsResponse, err error) {
+func (s EventResource) Comics(params ComicsParams) (resp *ComicsResponse, err error) {
 	err = s.client.fetch(s.basePath+"/comics", params, &resp)
 	return
 }
 
-func (s EventsResource) Creators(params CreatorsParams) (resp *CreatorsResponse, err error) {
+func (s EventResource) Creators(params CreatorsParams) (resp *CreatorsResponse, err error) {
 	err = s.client.fetch(s.basePath+"/creators", params, &resp)
 	return
 }
 
-func (s EventsResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
+func (s EventResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
 	err = s.client.fetch(s.basePath+"/stories", params, &resp)
 	return
 }
 
-func (s EventsResource) Stories(params StoriesParams) (resp *StoriesResponse, err error) {
+func (s EventResource) Stories(params StoriesParams) (resp *StoriesResponse, err error) {
 	err = s.client.fetch(s.basePath+"/stories", params, &resp)
 	return
 }
@@ -505,13 +545,24 @@ type EventsList struct {
 // Series
 /////
 
-func (c Client) Series(id int) SeriesResource {
+// Named SingleSeries because Series (plural) will search for series'
+func (c Client) SingleSeries(id int) SeriesResource {
 	return SeriesResource{basePath: fmt.Sprintf("/series/%d", id), client: c}
 }
 
 type SeriesResource struct {
 	basePath string
 	client   Client
+}
+
+func (c Client) Series(params SeriesParams) (resp *SeriesResponse, err error) {
+	err = c.fetch("/series", params, &resp)
+	return
+}
+
+func (s SeriesResource) Get() (resp *SeriesResponse, err error) {
+	err = s.client.fetch(s.basePath, nil, &resp)
+	return
 }
 
 func (s SeriesResource) Characters(params CharactersParams) (resp *CharactersResponse, err error) {
@@ -590,31 +641,41 @@ type SeriesList struct {
 // Creators
 /////
 
-func (c Client) Creators(id int) CreatorsResource {
-	return CreatorsResource{basePath: fmt.Sprintf("/creators/%d", id), client: c}
+func (c Client) Creator(id int) CreatorResource {
+	return CreatorResource{basePath: fmt.Sprintf("/creators/%d", id), client: c}
 }
 
-type CreatorsResource struct {
+type CreatorResource struct {
 	basePath string
 	client   Client
 }
 
-func (s CreatorsResource) Comics(params ComicsParams) (resp *ComicsResponse, err error) {
+func (c Client) Creators(params CreatorsParams) (resp *CreatorsResponse, err error) {
+	err = c.fetch("/creators", params, &resp)
+	return
+}
+
+func (s CreatorResource) Get() (resp *CreatorsResponse, err error) {
+	err = s.client.fetch(s.basePath, nil, &resp)
+	return
+}
+
+func (s CreatorResource) Comics(params ComicsParams) (resp *ComicsResponse, err error) {
 	err = s.client.fetch(s.basePath+"/comics", params, &resp)
 	return
 }
 
-func (s CreatorsResource) Events(params EventsParams) (resp *EventsResponse, err error) {
+func (s CreatorResource) Events(params EventsParams) (resp *EventsResponse, err error) {
 	err = s.client.fetch(s.basePath+"/events", params, &resp)
 	return
 }
 
-func (s CreatorsResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
+func (s CreatorResource) Series(params SeriesParams) (resp *SeriesResponse, err error) {
 	err = s.client.fetch(s.basePath+"/series", params, &resp)
 	return
 }
 
-func (s CreatorsResource) Stories(params StoriesParams) (resp *StoriesResponse, err error) {
+func (s CreatorResource) Stories(params StoriesParams) (resp *StoriesResponse, err error) {
 	err = s.client.fetch(s.basePath+"/stories", params, &resp)
 	return
 }
