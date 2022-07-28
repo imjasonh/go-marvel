@@ -1,9 +1,14 @@
 **go-marvel** is a [Go](https://golang.org) client library for the [Marvel REST API](https://developer.marvel.com/)
 
-See [`example/main.go`](https://github.com/ImJasonH/go-marvel/blob/master/example/main.go), which downloads all issue covers of a series, by series ID (default is "Uncanny X-Men"), and constructs a GIF image of them in order.
-- example output: http://www.imjasonh.com/dump/2258.gif
+See
+[`example/main.go`](https://github.com/imjasonh/go-marvel/blob/master/example/main.go),
+which downloads all issue covers of a series, by series ID (default is "Uncanny
+X-Men"), and constructs a GIF image of them in order.
 
-[![GoDoc](https://godoc.org/github.com/ImJasonH/go-marvel?status.png)](https://godoc.org/github.com/ImJasonH/go-marvel)
+- Uncanny X-Men: https://raw.githubusercontent.com/imjasonh/go-marvel/master/2258.gif
+- Amazing Spider-Man: https://raw.githubusercontent.com/imjasonh/go-marvel/master/1987.gif
+
+[![GoDoc](https://godoc.org/github.com/imjasonh/go-marvel?status.png)](https://godoc.org/github.com/imjasonh/go-marvel)
 
 ----------
 

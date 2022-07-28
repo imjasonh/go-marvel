@@ -8,11 +8,12 @@ import (
 	"image"
 	"image/gif"
 	"image/jpeg"
+	"log"
 	"net/http"
 	"os"
 	"strings"
 
-	marvel "github.com/ImJasonH/go-marvel"
+	marvel "github.com/imjasonh/go-marvel"
 )
 
 var (
@@ -23,6 +24,10 @@ var (
 
 func main() {
 	flag.Parse()
+
+	if *apiKey == "" || *secret == "" {
+		log.Fatal("need -pub and -priv")
+	}
 
 	c := marvel.Client{
 		PublicKey:  *apiKey,
@@ -41,8 +46,9 @@ func main() {
 			},
 		})
 		if err != nil {
-			panic(err)
+			log.Fatal("Getting comics (offset=%d)", offset)
 		}
+		fmt.Print(".")
 		for _, iss := range r.Data.Results {
 			url := iss.Thumbnail.URL(marvel.PortraitIncredible)
 			img := fetchImage(url)
