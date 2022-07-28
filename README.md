@@ -5,8 +5,8 @@ See
 which downloads all issue covers of a series, by series ID (default is "Uncanny
 X-Men"), and constructs a GIF image of them in order.
 
-- Uncanny X-Men: https://raw.githubusercontent.com/imjasonh/go-marvel/master/2258.gif
-- Amazing Spider-Man: https://raw.githubusercontent.com/imjasonh/go-marvel/master/1987.gif
+- Uncanny X-Men: https://github.com/imjasonh/go-marvel/blob/master/2258.gif
+- Amazing Spider-Man: https://github.com/imjasonh/go-marvel/blob/master/1987.gif
 
 [![GoDoc](https://godoc.org/github.com/imjasonh/go-marvel?status.png)](https://godoc.org/github.com/imjasonh/go-marvel)
 
